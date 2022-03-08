@@ -43,7 +43,7 @@ namespace Core.Common
                 "HKEY_LOCAL_MACHINE" => Microsoft.Win32.Registry.LocalMachine.OpenSubKey(regKey, false),
                 "HKEY_USERS" => Microsoft.Win32.Registry.Users.OpenSubKey(regKey, false),
                 "HKEY_CURRENT_CONFIG" => Microsoft.Win32.Registry.CurrentConfig.OpenSubKey(regKey, false),
-                _ => throw new NotSupportedException("Unknown hive: " + hive)
+                _ => throw new NotSupportedException($"Unknown hive: {hive}")
             };
 
             using (openRegKey)

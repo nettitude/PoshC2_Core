@@ -130,7 +130,7 @@ namespace Core.ActiveDirectory
                         break;
                     }
                     default:
-                        throw new ArgumentOutOfRangeException("Unknown join type: " + joinInfo.joinType);
+                        throw new ArgumentOutOfRangeException($"Unknown join type: {joinInfo.joinType}");
                 }
 
                 try
@@ -239,8 +239,8 @@ namespace Core.ActiveDirectory
 
                 var root = new DirectoryEntry($"WinNT://{computer}/{groupName},group");
 
-                Console.WriteLine("Name: " + root.Properties["Name"].Value);
-                Console.WriteLine("AccountName: " + root.Properties["AccountName"].Value);
+                Console.WriteLine($"Name: {root.Properties["Name"].Value}");
+                Console.WriteLine($"AccountName: {root.Properties["AccountName"].Value}");
 
 
                 foreach (string propName in root.Properties.PropertyNames)
@@ -252,11 +252,11 @@ namespace Core.ActiveDirectory
                         {
                             var valueAsByteArray = ObjectToByteArray(propertyValue);
                             var asciiString = Encoding.UTF8.GetString(valueAsByteArray);
-                            Console.WriteLine(propName + ": " + asciiString);
+                            Console.WriteLine($"{propName}: {asciiString}");
                         }
                         else
                         {
-                            Console.WriteLine(propName + ": " + propertyValue);
+                            Console.WriteLine($"{propName}: {propertyValue}");
                         }
                     }
                 }
@@ -264,7 +264,7 @@ namespace Core.ActiveDirectory
                 foreach (var member in (IEnumerable) root.Invoke("Members"))
                 {
                     using var memberEntry = new DirectoryEntry(member);
-                    Console.WriteLine("- " + memberEntry.Path); // No groups displayed...
+                    Console.WriteLine($"- {memberEntry.Path}"); // No groups displayed...
                 }
             }
             catch (Exception e)
@@ -368,22 +368,22 @@ namespace Core.ActiveDirectory
                         {
                             var byteArrayValue = ObjectToByteArray(propertyValue);
                             var asciiString = Encoding.ASCII.GetString(byteArrayValue);
-                            Console.WriteLine(propName + ": " + asciiString);
+                            Console.WriteLine($"{propName}: {asciiString}");
                         }
                         else if (propName == "member")
                         {
-                            Console.WriteLine(propName + ": " + propertyValue);
+                            Console.WriteLine($"{propName}: {propertyValue}");
                             members.Add(propertyValue.ToString());
                         }
                         else if (propName == "memberof")
                         {
-                            Console.WriteLine(propName + ": " + propertyValue);
+                            Console.WriteLine($"{propName}: {propertyValue}");
                             memberOfs.Add(propertyValue.ToString());
                         }
                         else if (propName.Contains("badpasswordtime") || propName.Contains("pwdlastset") || propName.Contains("lastlogontimestamp") || propName.Contains("lockouttime"))
                         {
                             var time = DateTime.FromFileTime((long) propertyValue);
-                            Console.WriteLine(propName + ": (CONVERTED) " + time);
+                            Console.WriteLine($"{propName}: (CONVERTED) {time}");
                         }
                         else if (!string.IsNullOrEmpty(property) && propName.Contains("adspath"))
                         {
@@ -391,7 +391,7 @@ namespace Core.ActiveDirectory
                         }
                         else
                         {
-                            Console.WriteLine(propName + ": " + propertyValue);
+                            Console.WriteLine($"{propName}: {propertyValue}");
                         }
                     }
                 }

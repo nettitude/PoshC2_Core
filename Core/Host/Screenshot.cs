@@ -82,7 +82,7 @@ namespace Core.Host
                     }
                     catch (Exception e)
                     {
-                        Console.Write("[-] Error taking screenshot of all windows: " + e.Message);
+                        Console.Write($"[-] Error taking screenshot of all windows: {e.Message}");
                     }
                 }
             }
@@ -109,7 +109,7 @@ namespace Core.Host
                     }
                     catch (Exception e)
                     {
-                        Console.Write("[-] Error taking multi-screenshot: " + e.Message);
+                        Console.Write($"[-] Error taking multi-screenshot: {e.Message}");
                     }
                 });
             }

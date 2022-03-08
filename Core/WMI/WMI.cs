@@ -11,8 +11,8 @@ namespace Core.WMI
             try
             {
                 var connectoptions = new ConnectionOptions();
-                var query = new SelectQuery("select * from Win32_process where ProcessId = '" + processId + "'");
-                ManagementScope scope = new ManagementScope(@"\\" + machineName + @"\root\cimv2");
+                var query = new SelectQuery($"select * from Win32_process where ProcessId = '{processId}'");
+                ManagementScope scope = new ManagementScope($@"\\{machineName}\root\cimv2");
 
                 using (var searcher = new ManagementObjectSearcher(scope, query))
                 {
@@ -75,7 +75,7 @@ namespace Core.WMI
                     var returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
                     if (returnVal == 0)
                     {
-                        var userName = argList[1] + "\\" + argList[0];
+                        var userName = $"{argList[1]}\\{argList[0]}";
                         output.Append($"[>] {obj["Name"]} ({obj["ProcessId"]}) running under {userName} on {machineName}\n");
                     }
                 }

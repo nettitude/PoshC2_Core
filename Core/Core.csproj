@@ -95,6 +95,7 @@
     <Compile Include="Common\Timer.cs" />
     <Compile Include="ProcessHandler\Unhooker.cs" />
     <Compile Include="WindowsInternals\Internals.cs" />
+    <Compile Include="WindowsInternals\Syscalls.cs" />
     <Compile Include="WMI\WMI.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -111,11 +112,6 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\Jenkinsfile">
-      <Link>Jenkinsfile</Link>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

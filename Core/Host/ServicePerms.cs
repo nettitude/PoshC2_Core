@@ -30,30 +30,30 @@ namespace Core.Host
                     var arc = fileSecurity.GetAccessRules(true, true, typeof(NTAccount));
                     foreach (FileSystemAccessRule rule in arc)
                     {
-                        var permString = rule.IdentityReference + " " + rule.AccessControlType + " " + rule.FileSystemRights;
+                        var permString = $"{rule.IdentityReference} {rule.AccessControlType} {rule.FileSystemRights}";
 
                         // is this case sensitive
                         if (permString.Contains("Users") & permString.Contains("Modify"))
                         {
-                            permString = "<b><div style=\"color:red;\">**" + permString + "</div></b>";
+                            permString = $"<b><div style=\"color:red;\">**{permString}</div></b>";
                         }
 
                         if (permString.Contains("Users") & permString.Contains("FullControl"))
                         {
-                            permString = "<b><div style=\"color:red;\">**" + permString + "</div></b>";
+                            permString = $"<b><div style=\"color:red;\">**{permString}</div></b>";
                         }
 
                         if (permString.Contains("Everyone") & permString.Contains("Modify"))
                         {
-                            permString = "<b><div style=\"color:red;\">**" + permString + "</div></b>";
+                            permString = $"<b><div style=\"color:red;\">**{permString}</div></b>";
                         }
 
                         if (permString.Contains("Everyone") & permString.Contains("FullControl"))
                         {
-                            permString = "<b><div style=\"color:red;\">**" + permString + "</div></b>";
+                            permString = $"<b><div style=\"color:red;\">**{permString}</div></b>";
                         }
 
-                        cPermString = cPermString + permString + " <br>";
+                        cPermString = $"{cPermString}{permString} <br>";
                     }
                 }
                 catch
@@ -68,12 +68,12 @@ namespace Core.Host
             var contentsFolders = ConvertDataTableToHtml2(dataSet.Tables["folders"]);
             try
             {
-                File.WriteAllText(@"" + path + "\\Report-" + hostName + ".html", contents + contentsFolders);
-                Console.WriteLine("[+] Written file to: " + path + "Report-" + hostName + ".html");
+                File.WriteAllText($@"{path}\Report-{hostName}.html", contents + contentsFolders);
+                Console.WriteLine($"[+] Written file to: {path}Report-{hostName}.html");
             }
             catch
             {
-                Console.WriteLine("[-] ERROR file to: " + path + "Report-" + hostName + ".html");
+                Console.WriteLine($"[-] ERROR file to: {path}Report-{hostName}.html");
             }
         }
 
@@ -113,7 +113,7 @@ namespace Core.Host
                 if (match.Success)
                 {
                     //Check for unquotes service paths
-                    var servicePath = match.Groups[1].Value + ".exe";
+                    var servicePath = $"{match.Groups[1].Value}.exe";
                     string unquoted;
                     if (!servicePath.Contains("\"") && servicePath.Contains(" "))
                     {
@@ -125,7 +125,7 @@ namespace Core.Host
                     }
 
                     // Finally, we get the Group value and display it.
-                    var key = match.Groups[1].Value + ".exe";
+                    var key = $"{match.Groups[1].Value}.exe";
                     key = key.Replace("\"", "");
                     string permsString = null;
                     try
@@ -139,35 +139,35 @@ namespace Core.Host
                             // find if users modify
                             // if it contains everyone or users with modify or fullControl then flag as bold or something.....
                             // or search through the html after.....
-                            var currentPermsString = rule.IdentityReference + " " + rule.AccessControlType + " " + rule.FileSystemRights;
+                            var currentPermsString = $"{rule.IdentityReference} {rule.AccessControlType} {rule.FileSystemRights}";
 
                             // is this case sensitive
                             if (currentPermsString.Contains("Users") & currentPermsString.Contains("Modify"))
                             {
-                                currentPermsString = "<b><div style=\"color:red;\">**" + currentPermsString + "</div></b>";
+                                currentPermsString = $"<b><div style=\"color:red;\">**{currentPermsString}</div></b>";
                             }
 
                             if (currentPermsString.Contains("Users") & currentPermsString.Contains("FullControl"))
                             {
-                                currentPermsString = "<b><div style=\"color:red;\">**" + currentPermsString + "</div></b>";
+                                currentPermsString = $"<b><div style=\"color:red;\">**{currentPermsString}</div></b>";
                             }
 
                             if (currentPermsString.Contains("Everyone") & currentPermsString.Contains("Modify"))
                             {
-                                currentPermsString = "<b><div style=\"color:red;\">**" + currentPermsString + "</div></b>";
+                                currentPermsString = $"<b><div style=\"color:red;\">**{currentPermsString}</div></b>";
                             }
 
                             if (currentPermsString.Contains("Everyone") & currentPermsString.Contains("FullControl"))
                             {
-                                currentPermsString = "<b><div style=\"color:red;\">**" + currentPermsString + "</div></b>";
+                                currentPermsString = $"<b><div style=\"color:red;\">**{currentPermsString}</div></b>";
                             }
 
-                            permsString = permsString + currentPermsString + " <br>";
+                            permsString = $"{permsString}{currentPermsString} <br>";
                         }
                     }
                     catch
                     {
-                        permsString = "Path not found: " + key + "\n";
+                        permsString = $"Path not found: {key}\n";
                     }
 
                     try
@@ -199,14 +199,14 @@ namespace Core.Host
                         var canStop = svc.CanPauseAndContinue;
                         var canStart = svc.CanStop;
                         var canShutdown = svc.CanShutdown;
-                        serviceInformation = serviceInformation + "<br>CanPauseAndContinue:" + canStop + "<br>CanStart:" + canStart + "<br>CanShutdown:" + canShutdown;
+                        serviceInformation = $"{serviceInformation}<br>CanPauseAndContinue:{canStop}<br>CanStart:{canStart}<br>CanShutdown:{canShutdown}";
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error" + ex);
+                        Console.WriteLine($"Error{ex}");
                     }
 
-                    ds.Tables["services"].Rows.Add(queryObj["DisplayName"] + " (" + queryObj["Name"] + ")", unquoted, queryObj["PathName"].ToString(), permsString,
+                    ds.Tables["services"].Rows.Add($"{queryObj["DisplayName"]} ({queryObj["Name"]})", unquoted, queryObj["PathName"].ToString(), permsString,
                         serviceInformation);
                 }
             }

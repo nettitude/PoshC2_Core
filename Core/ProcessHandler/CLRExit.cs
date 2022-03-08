@@ -18,7 +18,7 @@ namespace Core.ProcessHandler
             unsafe
             {
                 var target = exitMethod.MethodHandle.GetFunctionPointer();
-                Console.WriteLine("Writing ret to memory location: " + exitMethodPtr.ToString("x"));
+                Console.WriteLine($"Writing ret to memory location: {exitMethodPtr.ToString("x")}");
 
                 if (Internals.VirtualProtectEx((IntPtr) (-1), target, 1, Internals.PAGE_READWRITE, out var flOldProtect))
                 {

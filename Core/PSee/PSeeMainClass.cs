@@ -130,7 +130,7 @@ namespace Core.PSee
         internal static void RecentFiles(int fileCount = 10)
         {
             var sb = new StringBuilder();
-            foreach (var n in PSeeMain.RecentFiles(fileCount)) sb.AppendLine("\t" + n);
+            foreach (var n in PSeeMain.RecentFiles(fileCount)) sb.AppendLine($"\t{n}");
 
             Console.WriteLine(sb.ToString());
         }
@@ -138,28 +138,28 @@ namespace Core.PSee
         internal static void Processes()
         {
             var sb = new StringBuilder();
-            foreach (var n in PSeeMain.EnumProcesses()) sb.AppendLine("\t" + n);
+            foreach (var n in PSeeMain.EnumProcesses()) sb.AppendLine($"\t{n}");
             Console.WriteLine(sb.ToString());
         }
 
         internal static void ChromeBook()
         {
             var sb = new StringBuilder();
-            foreach (var n in PSeeMain.ChrBookmarks()) sb.AppendLine("\t" + n);
+            foreach (var n in PSeeMain.ChrBookmarks()) sb.AppendLine($"\t{n}");
             Console.WriteLine(sb.ToString());
         }
 
         internal static void IeBook()
         {
             var sb = new StringBuilder();
-            foreach (var n in PSeeMain.IeBookmarks()) sb.AppendLine("\t" + n);
+            foreach (var n in PSeeMain.IeBookmarks()) sb.AppendLine($"\t{n}");
             Console.WriteLine(sb.ToString());
         }
 
         internal static void EnumSoftware()
         {
             var sb = new StringBuilder();
-            foreach (var n in PSeeMain.InstSoftware()) sb.AppendLine("\t" + n);
+            foreach (var n in PSeeMain.InstSoftware()) sb.AppendLine($"\t{n}");
             Console.WriteLine(sb.ToString());
         }
     }

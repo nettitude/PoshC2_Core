@@ -11,7 +11,7 @@ namespace Core.ProcessHandler
     {
         internal static string GetWinVer()
         {
-            var installPath = (string) Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", null);
+            var installPath = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", null);
             if (installPath != null)
             {
                 return installPath;
@@ -22,7 +22,7 @@ namespace Core.ProcessHandler
 
         internal static string GetCurrentVer()
         {
-            var installPath = (string) Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "CurrentVersion", null);
+            var installPath = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "CurrentVersion", null);
             if (installPath != null)
             {
                 return installPath;
@@ -33,7 +33,7 @@ namespace Core.ProcessHandler
 
         internal static string GetProductName()
         {
-            var installPath = (string) Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", null);
+            var installPath = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", null);
             if (installPath != null)
             {
                 return installPath;
@@ -83,12 +83,12 @@ namespace Core.ProcessHandler
                 return "[-] Error cannot change memory protection";
             }
 
-            byte[] patch = {0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00};
+            byte[] patch = { 0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00 };
             var unmanagedPointer = Marshal.AllocHGlobal(8);
             Marshal.Copy(patch, 0, unmanagedPointer, 8);
             Internals.RtlMoveMemory(funcAddress, unmanagedPointer, 8);
             Internals.VirtualProtect(funcAddress, dwSize, zero, out zero);
-            return "\n[>] Memory location of ZwAllocateVirtualMemory: " + funcAddress.ToString("X8") + "\n[+] ZwAllocateVirtualMemory Patched\n";
+            return $"\n[>] Memory location of ZwAllocateVirtualMemory: {funcAddress.ToString("X8")}\n[+] ZwAllocateVirtualMemory Patched\n";
         }
 
         internal static string UHookOProcess(byte sysCallId = 0x26)
@@ -111,12 +111,12 @@ namespace Core.ProcessHandler
                 return "[-] Error cannot change memory protection";
             }
 
-            byte[] patch = {0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00};
+            byte[] patch = { 0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00 };
             var unmanagedPointer = Marshal.AllocHGlobal(8);
             Marshal.Copy(patch, 0, unmanagedPointer, 8);
             Internals.RtlMoveMemory(procAddress, unmanagedPointer, 8);
             Internals.VirtualProtect(procAddress, dwSize, zero, out zero);
-            return "\n[>] Memory location of ZwOpenProcess: " + procAddress.ToString("X8") + "\n[+] ZwOpenProcess Patched\n";
+            return $"\n[>] Memory location of ZwOpenProcess: {procAddress.ToString("X8")}\n[+] ZwOpenProcess Patched\n";
         }
 
         internal static string UHookRMemory(byte sysCallId = 0x3f)
@@ -139,12 +139,12 @@ namespace Core.ProcessHandler
                 return "[-] Error cannot change memory protection";
             }
 
-            byte[] patch = {0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00};
+            byte[] patch = { 0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00 };
             var unmanagedPointer = Marshal.AllocHGlobal(8);
             Marshal.Copy(patch, 0, unmanagedPointer, 8);
             Internals.RtlMoveMemory(procAddress, unmanagedPointer, 8);
             Internals.VirtualProtect(procAddress, dwSize, zero, out zero);
-            return "\n[>] Memory location of NtReadVirtualMemory: " + procAddress.ToString("X8") + "\n[+] NtReadVirtualMemory Patched\n";
+            return $"\n[>] Memory location of NtReadVirtualMemory: {procAddress.ToString("X8")}\n[+] NtReadVirtualMemory Patched\n";
         }
 
         internal static string UHookWMemory(byte sysCallId = 0x3a)
@@ -167,12 +167,12 @@ namespace Core.ProcessHandler
                 return "[-] Error cannot change memory protection";
             }
 
-            byte[] patch = {0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00};
+            byte[] patch = { 0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00 };
             var unmanagedPointer = Marshal.AllocHGlobal(8);
             Marshal.Copy(patch, 0, unmanagedPointer, 8);
             Internals.RtlMoveMemory(loadLibrary, unmanagedPointer, 8);
             Internals.VirtualProtect(loadLibrary, dwSize, zero, out zero);
-            return "\n[>] Memory location of NtWriteVirtualMemory: " + loadLibrary.ToString("X8") + "\n[+] NtWriteVirtualMemory Patched\n";
+            return $"\n[>] Memory location of NtWriteVirtualMemory: {loadLibrary.ToString("X8")}\n[+] NtWriteVirtualMemory Patched\n";
         }
 
         internal static string UHookMvSection(byte sysCallId = 0x28)
@@ -195,12 +195,12 @@ namespace Core.ProcessHandler
                 return "[-] Error cannot change memory protection";
             }
 
-            byte[] patch = {0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00};
+            byte[] patch = { 0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00 };
             var unmanagedPointer = Marshal.AllocHGlobal(8);
             Marshal.Copy(patch, 0, unmanagedPointer, 8);
             Internals.RtlMoveMemory(procAddress, unmanagedPointer, 8);
             Internals.VirtualProtect(procAddress, dwSize, zero, out zero);
-            return "\n[>] Memory location of NtMapViewOfSection: " + procAddress.ToString("X8") + "\n[+] NtMapViewOfSection Patched\n";
+            return $"\n[>] Memory location of NtMapViewOfSection: {procAddress.ToString("X8")}\n[+] NtMapViewOfSection Patched\n";
         }
 
         internal static string UHook(byte sysCallId)
@@ -223,40 +223,47 @@ namespace Core.ProcessHandler
                 return "[-] Error cannot change memory protection";
             }
 
-            byte[] patch = {0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00};
+            byte[] patch = { 0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00 };
             var unmanagedPointer = Marshal.AllocHGlobal(8);
             Marshal.Copy(patch, 0, unmanagedPointer, 8);
             Internals.RtlMoveMemory(procAddress, unmanagedPointer, 8);
             Internals.VirtualProtect(procAddress, dwSize, zero, out zero);
-            return "\n[>] Memory location of ZwCreateThreadEx: " + procAddress.ToString("X8") + "\n[+] ZwCreateThreadEx Patched\n";
+            return $"\n[>] Memory location of ZwCreateThreadEx: {procAddress.ToString("X8")}\n[+] ZwCreateThreadEx Patched\n";
         }
 
-        internal static string UHooker(byte sysCallId, string apiCall)
+        internal static void UHooker(byte sysCallId, string apiCall)
         {
-            var targetDLL = Internals.LoadLibrary("ntdll.dll");
-            if (targetDLL == IntPtr.Zero)
+            try
             {
-                return "[-] Error cannot find ntdll.dll";
-            }
+                var targetDLL = Internals.LoadLibrary("ntdll.dll");
+                if (targetDLL == IntPtr.Zero)
+                {
+                    Console.WriteLine("[-] Error cannot find ntdll.dll");
+                }
 
-            var procAddress = Internals.GetProcAddress(targetDLL, apiCall);
-            if (procAddress == IntPtr.Zero)
+                var procAddress = Internals.GetProcAddress(targetDLL, apiCall);
+                if (procAddress == IntPtr.Zero)
+                {
+                    Console.WriteLine($"[-] Error cannot find {apiCall}");
+                }
+
+                const int dwSize = 5;
+                if (!Internals.VirtualProtect(procAddress, dwSize, 0x40, out var zero))
+                {
+                    Console.WriteLine("[-] Error cannot change memory protection");
+                }
+
+                byte[] patch = { 0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00 };
+                var unmanagedPointer = Marshal.AllocHGlobal(8);
+                Marshal.Copy(patch, 0, unmanagedPointer, 8);
+                Internals.RtlMoveMemory(procAddress, unmanagedPointer, 8);
+                Internals.VirtualProtect(procAddress, dwSize, zero, out zero);
+                Console.WriteLine($"\n[>] Memory location of {apiCall}: 0x{procAddress.ToString("X8")}\n[+] {apiCall} patched with syscall number: 0x{sysCallId:X8}\n");
+            }
+            catch (Exception e)
             {
-                return "[-] Error cannot find " + apiCall;
+                Console.WriteLine($"Error unhooking {apiCall}: {e}");
             }
-
-            const int dwSize = 5;
-            if (!Internals.VirtualProtect(procAddress, dwSize, 0x40, out uint zero))
-            {
-                return "[-] Error cannot change memory protection";
-            }
-
-            byte[] patch = {0x4c, 0x8b, 0xd1, 0xb8, sysCallId, 0x00, 0x00, 0x00};
-            var unmanagedPointer = Marshal.AllocHGlobal(8);
-            Marshal.Copy(patch, 0, unmanagedPointer, 8);
-            Internals.RtlMoveMemory(procAddress, unmanagedPointer, 8);
-            Internals.VirtualProtect(procAddress, dwSize, zero, out zero);
-            return "\n[>] Memory location of " + apiCall + ": " + procAddress.ToString("X8") + "\n[+] " + apiCall + " Patched\n";
         }
 
         internal static string APICall(string dll, string apiCall)
@@ -270,13 +277,13 @@ namespace Core.ProcessHandler
             var procAddress = Internals.GetProcAddress(targetDLL, apiCall);
             if (procAddress == IntPtr.Zero)
             {
-                return "[-] Error cannot find " + apiCall;
+                return $"[-] Error cannot find {apiCall}";
             }
 
             Marshal.ReadInt64(procAddress);
             var x = Process.GetCurrentProcess();
 
-            return "\n[>] Memory location of " + apiCall + ": " + $"{procAddress.ToInt64():X8}" + "\n > ASM > " + ReadInt(x.Handle, procAddress);
+            return $"\n[>] Memory location of {apiCall}: {procAddress.ToInt64():X8}\n > ASM > {ReadInt(x.Handle, procAddress)}";
         }
 
         internal static string HookRet(string dll, string function)
@@ -298,7 +305,7 @@ namespace Core.ProcessHandler
                 return "[-] Error cannot change memory protection";
             }
 
-            byte[] patch = {0xE9};
+            byte[] patch = { 0xE9 };
 
             var unmanagedPointer = Marshal.AllocHGlobal(1);
             Marshal.Copy(patch, 0, unmanagedPointer, 1);
@@ -311,7 +318,7 @@ namespace Core.ProcessHandler
 
             return $"\n[>] Successfully hooked {dll} : {function} with 0xE9 # ret";
         }
-        
+
         private static string ByteArrayToString(byte[] ba)
         {
             var hex = new StringBuilder(ba.Length * 2);

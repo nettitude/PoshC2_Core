@@ -20,8 +20,8 @@ namespace Core.ProcessHandler
                 var procEntry = new Internals.ProcessEntry32 {dwSize = (uint) Marshal.SizeOf(typeof(Internals.ProcessEntry32))};
                 handleToSnapshot = Internals.CreateToolhelp32Snapshot((uint) Internals.SnapshotFlags.Process, 0);
 
-                pids.Append("PID".PadRight(10) + "USER".PadRight(15) + "ARCH".PadRight(10) + "PPID".PadRight(10) + "NAME" + "\n");
-                pids.Append("===".PadRight(10) + "====".PadRight(15) + "====".PadRight(10) + "====".PadRight(10) + "====" + "\n");
+                pids.Append($"{"PID".PadRight(10)}{"USER".PadRight(15)}{"ARCH".PadRight(10)}{"PPID".PadRight(10)}NAME\n");
+                pids.Append($"{"===".PadRight(10)}{"====".PadRight(15)}{"====".PadRight(10)}{"====".PadRight(10)}====\n");
                 for (Internals.Process32First(handleToSnapshot, ref procEntry); Internals.Process32Next(handleToSnapshot, ref procEntry);)
                 {
                     var arch = "";

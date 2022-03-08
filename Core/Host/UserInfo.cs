@@ -17,7 +17,7 @@ namespace Core.Host
 
                 foreach (var result in data)
                 {
-                    Console.WriteLine("LastBootTime: " + ManagementDateTimeConverter.ToDateTime(result["LastBootUpTime"].ToString()));
+                    Console.WriteLine($"LastBootTime: {ManagementDateTimeConverter.ToDateTime(result["LastBootUpTime"].ToString())}");
                 }
 
                 wmiData = new ManagementObjectSearcher(@"root\cimv2", "Select * from Win32_UserAccount Where LocalAccount = True");
@@ -58,14 +58,14 @@ namespace Core.Host
 
                     if (gData.Count > 0)
                     {
-                        Console.WriteLine("\r\n> " + result["Name"]);
+                        Console.WriteLine($"\r\n> {result["Name"]}");
                         Console.WriteLine("======================");
                         foreach (var gMember in gData)
                         {
                             var splitArgs = gMember.GetPropertyValue("PartComponent").ToString().Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
                             var sDomain = splitArgs[0].Split(new[] {"="}, StringSplitOptions.RemoveEmptyEntries)[1].Replace("\"", "");
                             var sUser = splitArgs[1].Split(new[] {"="}, StringSplitOptions.RemoveEmptyEntries)[1].Replace("\"", "");
-                            members.Add(sDomain + "\\" + sUser);
+                            members.Add($"{sDomain}\\{sUser}");
                         }
 
                         members.ForEach(i => Console.Write("{0}\r\n", i));
@@ -90,7 +90,7 @@ namespace Core.Host
                                 searchResult.Properties[propName];
                             foreach (var propertyValue in valueCollection)
                             {
-                                Console.WriteLine(propName + ": " + propertyValue);
+                                Console.WriteLine($"{propName}: {propertyValue}");
                             }
                         }
                     }
@@ -109,14 +109,14 @@ namespace Core.Host
                     Console.WriteLine($"Using DirectoryEntry: WinNT://{Environment.UserDomainName}");
 
                     var root = new DirectoryEntry($"WinNT://{Environment.UserDomainName}");
-                    Console.WriteLine("Name: " + root.Properties["Name"].Value);
-                    Console.WriteLine("MinPasswordLength: " + root.Properties["MinPasswordLength"].Value);
-                    Console.WriteLine("MinPasswordAge: " + (int) root.Properties["MinPasswordAge"].Value / 86400);
-                    Console.WriteLine("MaxPasswordAge: " + (int) root.Properties["MaxPasswordAge"].Value / 86400);
-                    Console.WriteLine("PasswordHistoryLength: " + root.Properties["PasswordHistoryLength"].Value);
-                    Console.WriteLine("MaxBadPasswordsAllowed: " + root.Properties["MaxBadPasswordsAllowed"].Value);
-                    Console.WriteLine("AutoUnlockInterval: " + (int) root.Properties["AutoUnlockInterval"].Value / 60);
-                    Console.WriteLine("LockoutObservationInterval: " + (int) root.Properties["LockoutObservationInterval"].Value / 60);
+                    Console.WriteLine($"Name: {root.Properties["Name"].Value}");
+                    Console.WriteLine($"MinPasswordLength: {root.Properties["MinPasswordLength"].Value}");
+                    Console.WriteLine($"MinPasswordAge: {(int)root.Properties["MinPasswordAge"].Value / 86400}");
+                    Console.WriteLine($"MaxPasswordAge: {(int)root.Properties["MaxPasswordAge"].Value / 86400}");
+                    Console.WriteLine($"PasswordHistoryLength: {root.Properties["PasswordHistoryLength"].Value}");
+                    Console.WriteLine($"MaxBadPasswordsAllowed: {root.Properties["MaxBadPasswordsAllowed"].Value}");
+                    Console.WriteLine($"AutoUnlockInterval: {(int)root.Properties["AutoUnlockInterval"].Value / 60}");
+                    Console.WriteLine($"LockoutObservationInterval: {(int)root.Properties["LockoutObservationInterval"].Value / 60}");
                 }
                 catch (Exception e)
                 {

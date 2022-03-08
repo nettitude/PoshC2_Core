@@ -73,7 +73,7 @@ namespace Core.FileSystem
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, rule.FileSystemRights + ")");
+                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, $"{rule.FileSystemRights})");
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace Core.FileSystem
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, rule.FileSystemRights + ")");
+                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, $"{rule.FileSystemRights})");
                 }
             }
         }

