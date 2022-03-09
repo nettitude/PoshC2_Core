@@ -10,6 +10,7 @@ namespace Core.WindowsInternals
             _7601 = 7601,
             _9600 = 9600,
             _14393 = 14393,
+            _19043 = 19043,
             _22000 = 22000,
         }
 
@@ -59,6 +60,24 @@ namespace Core.WindowsInternals
                     SysCalls.NtCreateThread => 0x4f,
                     SysCalls.NtUnmapViewOfSection => 0x2b,
                     SysCalls.NtCreateUserProcess => 0xce,
+                    SysCalls.ZwFreeVirtualMemory => 0x1f,
+                    SysCalls.NtQueueApcThread => 0x46,
+                    _ => throw new ArgumentException($"Unknown Syscall type: {syscallType}")
+                },
+                (int)WindowsVersions._19043 => syscallType switch
+                {
+                    SysCalls.NtOpenProcess => 0x27,
+                    SysCalls.NtCreateThreadEx => 0xc2,
+                    SysCalls.NtWriteVirtualMemory => 0x3b,
+                    SysCalls.ZwAllocateVirtualMemory => 0x19,
+                    SysCalls.NtCreateSection => 0x4b,
+                    SysCalls.ZwMapViewOfSection => 0x29,
+                    SysCalls.NtCreateProcess => 0xba,
+                    SysCalls.ZwProtectVirtualMemory => 0x51,
+                    SysCalls.ZwReadVirtualMemory => 0x40,
+                    SysCalls.NtCreateThread => 0x4f,
+                    SysCalls.NtUnmapViewOfSection => 0x2b,
+                    SysCalls.NtCreateUserProcess => 0xc9,
                     SysCalls.ZwFreeVirtualMemory => 0x1f,
                     SysCalls.NtQueueApcThread => 0x46,
                     _ => throw new ArgumentException($"Unknown Syscall type: {syscallType}")
