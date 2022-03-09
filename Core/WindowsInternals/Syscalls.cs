@@ -7,10 +7,10 @@ namespace Core.WindowsInternals
     {
         private enum WindowsVersions
         {
-            _7601,
-            _9600,
-            _14393,
-            _22000,
+            _7601 = 7601,
+            _9600 = 9600,
+            _14393 = 14393,
+            _22000 = 22000,
         }
 
         internal enum SysCalls
