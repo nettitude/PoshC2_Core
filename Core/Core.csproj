@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Core</RootNamespace>
     <AssemblyName>Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -75,10 +75,10 @@
     <Compile Include="CredPopper\CredentialSafeHandle.cs" />
     <Compile Include="CredPopper\GlobalSuppressions.cs" />
     <Compile Include="FileSystem\File.cs" />
+    <Compile Include="Host\ScreenshotUtil.cs" />
     <Compile Include="Host\SSLInspection.cs" />
     <Compile Include="ProcessHandler\CLRExit.cs" />
     <Compile Include="PSee\CLRVer.cs" />
-    <Compile Include="Common\Comms.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="Injection\CreateRemoteThread.cs" />
     <Compile Include="CredPopper\CredPopper.cs" />
@@ -94,6 +94,8 @@
     <Compile Include="Host\Screenshot.cs" />
     <Compile Include="Common\Timer.cs" />
     <Compile Include="ProcessHandler\Unhooker.cs" />
+    <Compile Include="PowerStatusTracker\LockChecker.cs" />
+    <Compile Include="PowerStatusTracker\PowerStatusTrackerForm.cs" />
     <Compile Include="WindowsInternals\Internals.cs" />
     <Compile Include="WindowsInternals\Syscalls.cs" />
     <Compile Include="WMI\WMI.cs" />

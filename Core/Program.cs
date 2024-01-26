@@ -24,7 +24,7 @@ namespace Core
                 {
                     var method = typeof(Core).GetMethod(coreMethod.Name);
                     var attributes = method?.GetCustomAttributes(true);
-                    if (attributes is not {Length: > 0}) continue;
+                    if (attributes is not { Length: > 0 }) continue;
                     Console.WriteLine((attributes[0] as CoreDispatch)?.Usage);
                     Console.WriteLine($"\t{(attributes[0] as CoreDispatch)?.Description}");
                 }
@@ -38,10 +38,10 @@ namespace Core
         public static void Main(string[] args)
         {
             if (args.Length == 0 || args.Length > 1 && (args[1].ToLower() == "-help" || args[1].ToLower() == "help" || args[1].ToLower() == "?" || args[1].ToLower() == "-h"))
-            {                
+            {
                 PrintHelp();
-                Console.WriteLine($"FileVersion: {FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location).FileVersion}");
-                Console.WriteLine($"ProductVersion: {FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location).ProductVersion}");
+                Console.WriteLine($"FileVersion: {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}");
+                Console.WriteLine($"ProductVersion: {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}");
                 return;
             }
 
@@ -55,7 +55,7 @@ namespace Core
             }
         }
 
-        private static void Run(List<string> args)
+        public static void Run(List<string> args)
         {
             if (args.Count < 1)
             {
@@ -93,9 +93,9 @@ namespace Core
                 Console.WriteLine("[-] Unable to get method - GetMethod returned null");
                 return;
             }
-            
+
             var parameters = method.GetParameters();
-            
+
             if (parameters.Length == 0)
             {
                 // The method has no parameters
@@ -103,7 +103,12 @@ namespace Core
                 return;
             }
 
-            method.Invoke(null, new object[] {args.ToArray()});
+            method.Invoke(null, new object[] { args.ToArray() });
+        }
+        
+        public static void SetDelegates(Action<string, byte[]> pSendData, Func<long> pGetDllBaseAddress, Func<string> pGetCurrentTaskId)
+        {
+            Core.SetDelegates(pSendData, pGetDllBaseAddress, pGetCurrentTaskId);
         }
     }
 }

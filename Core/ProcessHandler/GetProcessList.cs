@@ -20,18 +20,20 @@ namespace Core.ProcessHandler
                 var procEntry = new Internals.ProcessEntry32 {dwSize = (uint) Marshal.SizeOf(typeof(Internals.ProcessEntry32))};
                 handleToSnapshot = Internals.CreateToolhelp32Snapshot((uint) Internals.SnapshotFlags.Process, 0);
 
-                pids.Append($"{"PID".PadRight(10)}{"USER".PadRight(15)}{"ARCH".PadRight(10)}{"PPID".PadRight(10)}NAME\n");
-                pids.Append($"{"===".PadRight(10)}{"====".PadRight(15)}{"====".PadRight(10)}{"====".PadRight(10)}====\n");
+                pids.Append("PID".PadRight(10) + "USER".PadRight(15) + "ARCH".PadRight(10) + "PPID".PadRight(10) + "SESSIONID".PadRight(10) + "NAME"+"\n");
+                pids.Append("===".PadRight(10) + "====".PadRight(15) + "====".PadRight(10) + "====".PadRight(10) + "=========".PadRight(10) + "===="+"\n");
                 for (Internals.Process32First(handleToSnapshot, ref procEntry); Internals.Process32Next(handleToSnapshot, ref procEntry);)
                 {
                     var arch = "";
-                    var proc = Process.GetProcessById((int) procEntry.th32ProcessID);
+                    //var proc = Process.GetProcessById((int) procEntry.th32ProcessID);
+                    var proc = Internals.OpenProcess(Internals.PROCESS_QUERY_LIMITED_INFORMATION, false, procEntry.th32ProcessID);
+
                     var is32Os = Is32BitArch();
                     if (is32Os == false)
                     {
                         try
                         {
-                            Internals.IsWow64Process(proc.Handle, out var is64Bit);
+                            Internals.IsWow64Process(proc, out var is64Bit);
                             arch = is64Bit ? "x86" : "x64";
                         }
                         catch
@@ -42,11 +44,12 @@ namespace Core.ProcessHandler
                     {
                         arch = "x86";
                     }
-
+                    Internals.ProcessIdToSessionId(procEntry.th32ProcessID, out var sessionId);
                     pids.Append(procEntry.th32ProcessID.ToString().PadRight(10));
                     pids.Append(GetProcessUser(proc).PadRight(15));
                     pids.Append(arch.PadRight(10));
                     pids.Append(procEntry.th32ParentProcessID.ToString().PadRight(10));
+                    pids.Append(sessionId.ToString().PadRight(10));
                     pids.Append(procEntry.szExeFile);
                     pids.Append("\n");
                 }
@@ -72,12 +75,12 @@ namespace Core.ProcessHandler
         // Get username from process
         // https://stackoverflow.com/questions/777548/how-do-i-determine-the-owner-of-a-process-in-c
 
-        private static string GetProcessUser(Process process)
+        private static string GetProcessUser(IntPtr hProc)
         {
             var processHandle = IntPtr.Zero;
             try
             {
-                Internals.OpenProcessToken(process.Handle, 8, out processHandle);
+                Internals.OpenProcessToken(hProc, 8, out processHandle);
                 var wi = new WindowsIdentity(processHandle);
                 var user = wi.Name;
                 return user.Contains(@"\") ? user.Substring(user.IndexOf(@"\", StringComparison.Ordinal) + 1) : user;

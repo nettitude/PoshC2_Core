@@ -19,7 +19,7 @@ namespace Core.Arp
                     if (args.Length > 2 && !string.IsNullOrEmpty(args[2]))
                     {
                         Console.WriteLine("");
-                        Console.WriteLine($"[+] ArpScan / IP resolution against: {args[1]}");
+                        Console.WriteLine("[+] ArpScan / IP resolution against: " + args[1]);
                         Console.WriteLine("================================================================");
                         foreach (var kvp in result)
                         {
@@ -30,7 +30,7 @@ namespace Core.Arp
                     }
                     else
                     {
-                        Console.WriteLine($"[+] ArpScan against: {args[1]}");
+                        Console.WriteLine("[+] ArpScan against: " + args[1]);
                         Console.WriteLine("=================================================");
                         foreach (var kvp in result)
                         {
@@ -41,7 +41,7 @@ namespace Core.Arp
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error: {e}");
+                Console.WriteLine("Error: " + e);
             }
         }
     }

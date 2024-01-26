@@ -51,7 +51,7 @@ namespace Core.FileSystem
             {
                 Console.WriteLine($"[-] Error running GetFileACL: {e.Message}");
             }
-            var dateTime = System.IO.File.GetLastAccessTime(path);
+            var dateTime = System.IO.File.GetLastAccessTimeUtc(path);
             Console.WriteLine($" Last access time : {dateTime}");
             foreach (var rule in orderedResults)
             {
@@ -73,7 +73,7 @@ namespace Core.FileSystem
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, $"{rule.FileSystemRights})");
+                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, rule.FileSystemRights + ")");
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace Core.FileSystem
                 Console.WriteLine($"[-] Error running GetFolderACL: {e.Message}");
             }
             
-            var dt = System.IO.File.GetLastAccessTime(path);
+            var dt = System.IO.File.GetLastAccessTimeUtc(path);
             Console.WriteLine($" Last access time : {dt}");
             foreach (var rule in orderedResults)
             {
@@ -117,7 +117,7 @@ namespace Core.FileSystem
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, $"{rule.FileSystemRights})");
+                    Console.WriteLine(" > Account:{0} ({1}", rule.IdentityReference.Value, rule.FileSystemRights + ")");
                 }
             }
         }

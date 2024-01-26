@@ -207,13 +207,18 @@ namespace Core.PSee
             var results = new List<string>();
             var bookmarksFile = $@"C:\Users\{Environment.UserName}\AppData\Local\Google\Chrome\User Data\Default\bookmarks";
             string name = null;
+            if (!File.Exists(bookmarksFile))
+            {
+                Console.WriteLine("No bookmarks");
+                return new List<string>();
+            }
             foreach (var line in File.ReadAllLines(bookmarksFile))
             {
                 var ln = line.Trim();
                 if (ln.StartsWith("\"name\": \""))
                     name = ln.Substring(8).Replace("\"", "");
                 else if (ln.StartsWith("\"url\": \""))
-                    results.Add($"{name}:{ln.Substring(7).Replace("\"", "")}");
+                    results.Add(name + ":" + ln.Substring(7).Replace("\"", ""));
             }
 
             return results;
@@ -258,7 +263,7 @@ namespace Core.PSee
         public static List<string> GetUsersForGroup(string groupName)
         {
             var lstUsers = new List<string>();
-            var localMachine = new DirectoryEntry($"WinNT://{Environment.MachineName}");
+            var localMachine = new DirectoryEntry("WinNT://" + Environment.MachineName);
             if (localMachine.Children.Find(groupName, "group")?.Invoke("members", null) is IEnumerable rdpMembers)
                 foreach (var groupMember in rdpMembers)
                     lstUsers.Add(new DirectoryEntry(groupMember)?.Name);

@@ -5,12 +5,11 @@ namespace Core.Common
 {
     internal static class WebRequest
     {
-        internal static WebClient Curl(string df = null, string purl = null, string proxyUser = null, string proxyPassword = null,
-            string useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36")
+        internal static WebClient Curl(string df = null, string purl = null, string proxyUser = null, string proxyPassword = null, string[] headers = null)
         {
             try
             {
-                ServicePointManager.SecurityProtocol = (SecurityProtocolType) 192 | (SecurityProtocolType) 768 | (SecurityProtocolType) 3072;
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType)192 | (SecurityProtocolType)768 | (SecurityProtocolType)3072;
             }
             catch (Exception e)
             {
@@ -19,11 +18,11 @@ namespace Core.Common
 
             var webClientObject = new WebClient();
 
-            if (!string.IsNullOrEmpty(purl))
+            if (!string.IsNullOrWhiteSpace(purl))
             {
                 Console.WriteLine(purl);
-                var proxy = new WebProxy {Address = new Uri(purl), Credentials = new NetworkCredential(proxyUser, proxyPassword)};
-                if (string.IsNullOrEmpty(proxyUser))
+                var proxy = new WebProxy { Address = new Uri(purl), Credentials = new NetworkCredential(proxyUser, proxyPassword) };
+                if (string.IsNullOrWhiteSpace(proxyUser))
                 {
                     proxy.UseDefaultCredentials = true;
                 }
@@ -37,13 +36,42 @@ namespace Core.Common
                     webClientObject.Proxy.Credentials = CredentialCache.DefaultCredentials;
             }
 
-            if (!string.IsNullOrEmpty(df))
+            if (!string.IsNullOrWhiteSpace(df))
             {
                 webClientObject.Headers.Add("Host", df);
             }
 
-            webClientObject.Headers.Add("User-Agent", useragent);
             webClientObject.Headers.Add("Referer", "");
+
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    if (!header.Contains(":"))
+                    {
+                        Console.WriteLine($"Invalid header format: {header}, expected key:value, skipping...");
+                        continue;
+                    }
+
+                    if (header.Split(':')[0].ToLower() == "cookie")
+                    {
+                        Console.WriteLine($"{HttpRequestHeader.Cookie}: {header.Split(':')[1]}");
+                        webClientObject.Headers.Add(HttpRequestHeader.Cookie, header.Split(':')[1]);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{header.Split(':')[0]}: {header.Split(':')[1]}");
+                        webClientObject.Headers.Add(header.Split(':')[0], header.Split(':')[1]);
+                    }
+                   
+                }
+            }
+            
+            if (webClientObject.Headers.Get("User-Agent") == null)
+            {
+                webClientObject.Headers.Add("User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69");
+            }
 
             return webClientObject;
         }

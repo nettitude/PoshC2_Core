@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -9,14 +9,36 @@ namespace Core.WindowsInternals
 {
     internal static class Internals
     {
-        public const long READ_CONTROL = 0x00020000;
-        public const long SYNCHRONIZE = 0x00100000;
-        public const uint STANDARD_RIGHTS_REQUIRED = 0x000F0000;
-        public const uint GENERIC_ALL = 0x1FFFFF;
+        internal const int NOTIFY_FOR_THIS_SESSION = 0;
+        internal const int WM_QUERYENDSESSION = 0x11;
+        internal const int WM_ENDSESSION = 0x16;
+        internal const int WM_WTSSESSION_CHANGE = 0x2b1;
+        internal const int WM_POWERBROADCAST = 0x0218;
+        internal const int PBT_POWERSETTINGCHANGE = 0x8013;
+        internal const int PBT_APMBATTERYLOW = 0x09;
+        internal const int PBT_APMPOWERSTATUSCHANGE = 0xA;
+        internal const int PBT_APMQUERYSUSPEND = 0x0;
+        internal const int PBT_APMRESUMESUSPEND = 0x07;
+        internal const int PBT_APMSUSPEND = 0x4;
+        internal const uint ENDSESSION_CLOSEAPP = 0x00000001;
+        internal const uint ENDSESSION_CRITICAL = 0x40000000;
+        internal const uint ENDSESSION_LOGOFF = 0x80000000;
+        internal const int DEVICE_NOTIFY_WINDOW_HANDLE = 0x00000000;
+        internal static Guid GUID_MONITOR_POWER_ON = Guid.Parse("02731015-4510-4526-99e6-e5a17ebd1aea");
+        internal static Guid GUID_BATTERY_PERCENTAGE_REMAINING = Guid.Parse("a7ad8041-b45a-4cae-87a3-eecbb468a9e1");
+        internal static Guid GUID_POWER_SAVING_STATUS = Guid.Parse("E00958C0-C213-4ACE-AC77-FECCED2EEEA5");
+        internal static Guid GUID_SYSTEM_AWAYMODE = Guid.Parse("98a7f580-01f7-48aa-9c0f-44352c29e5C0");
+        internal static Guid GUID_ACDC_POWER_SOURCE = Guid.Parse("5d3e9a59-e9D5-4b00-a6bd-ff34ff516548");
+
+        internal const long READ_CONTROL = 0x00020000;
+        internal const long SYNCHRONIZE = 0x00100000;
+        internal const uint STANDARD_RIGHTS_REQUIRED = 0x000F0000;
+        internal const uint GENERIC_ALL = 0x1FFFFF;
 
         // Process privileges
         internal const int PROCESS_CREATE_THREAD = 0x0002;
         internal const int PROCESS_QUERY_INFORMATION = 0x0400;
+        internal const int PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
         internal const int PROCESS_VM_OPERATION = 0x0008;
         internal const int PROCESS_VM_WRITE = 0x0020;
         internal const int PROCESS_VM_READ = 0x0010;
@@ -50,8 +72,7 @@ namespace Core.WindowsInternals
 
         [DllImport("credui.dll", CharSet = CharSet.Auto)]
         internal static extern bool CredUnPackAuthenticationBuffer(int dwFlags, IntPtr pAuthBuffer, uint cbAuthBuffer, StringBuilder pszUserName, ref int pcchMaxUserName,
-            StringBuilder pszDomainName,
-            ref int pcchMaxDomainame, StringBuilder pszPassword, ref int pcchMaxPassword);
+            StringBuilder pszDomainName, ref int pcchMaxDomainame, StringBuilder pszPassword, ref int pcchMaxPassword);
 
         [DllImport("credui.dll", EntryPoint = "CredUIPromptForWindowsCredentialsW", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern int CredUIPromptForWindowsCredentials(ref CredentialUiInfo creditUr, int authError, ref uint authPackage, IntPtr inAuthBuffer, int inAuthBufferSize,
@@ -130,6 +151,9 @@ namespace Core.WindowsInternals
 
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
         internal static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, FreeType dwFreeType);
+
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        public static extern bool ProcessIdToSessionId(uint dwProcessId, out uint pSessionId);
 
         [DllImport("Netapi32.dll", CharSet = CharSet.Unicode)]
         public static extern int NetShareEnum(string serverName, int level, ref IntPtr bufPtr, uint prefmaxlen, ref int entriesread, ref int totalentries, ref int resumeHandle);
@@ -218,7 +242,6 @@ namespace Core.WindowsInternals
         [DllImport("ntdll.dll")]
         public static extern Ntstatus ZwProtectVirtualMemory([In] IntPtr processHandle, ref IntPtr baseAddress, ref uint regionSize, [In] MemoryProtection newProtect,
             [Out] out MemoryProtection oldProtect);
-
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct Wow64Context
@@ -1125,5 +1148,61 @@ namespace Core.WindowsInternals
             WriteCopy = 0x08,
             //SEC_NO_CHANGE = 0x00400000
         }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        internal struct POWERBROADCAST_SETTING
+        {
+            public Guid PowerSetting;
+            public int DataLength;
+            public byte Data;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        internal struct SYSTEM_POWER_STATUS
+        {
+            public byte ACLineStatus;
+            public byte BatteryFlag;
+            public byte BatteryLifePercent;
+            public byte SystemStatusFlag;
+            public int BatteryLifeTime;
+            public int BatteryFullLifeTime;
+        }
+
+        internal enum SessionStatus
+        {
+            WTS_CONSOLE_CONNECT = 0x1,
+            WTS_CONSOLE_DISCONNECT = 0x2,
+            WTS_REMOTE_CONNECT = 0x3,
+            WTS_REMOTE_DISCONNECT = 0x4,
+            WTS_SESSION_LOGON = 0x5,
+            WTS_SESSION_LOGOFF = 0x6,
+            WTS_SESSION_LOCK = 0x7,
+            WTS_SESSION_UNLOCK = 0x8,
+            WTS_SESSION_REMOTE_CONTROL = 0x9
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern IntPtr OpenInputDesktop(uint dwFlags, bool fInherit, uint dwDesiredAccess);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        internal static extern bool WTSRegisterSessionNotification(IntPtr hWnd, [MarshalAs(UnmanagedType.U4)] int dwFlags);
+
+        [DllImport("WtsApi32.dll")]
+        internal static extern bool WTSUnRegisterSessionNotification(IntPtr hWnd);
+
+        [DllImport("User32", SetLastError = true, EntryPoint = "RegisterPowerSettingNotification", CallingConvention = CallingConvention.StdCall)]
+        internal static extern IntPtr RegisterPowerSettingNotification(IntPtr hRecipient, ref Guid powerSettingGuid, int flags);
+
+        [DllImport("User32", EntryPoint = "UnregisterPowerSettingNotification", CallingConvention = CallingConvention.StdCall)]
+        internal static extern bool UnregisterPowerSettingNotification(IntPtr handle);
+
+        [DllImport("kernel32.dll", EntryPoint = "GetSystemPowerStatus")]
+        internal static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpPower);
     }
 }
